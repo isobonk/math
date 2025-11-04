@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Geometry Quiz and Calculator</title>
+    <style>
+        body {
+            font-family: Times New Roman, serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        select, input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .question {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #e8f4f8;
+            border-radius: 5px;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .correct {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .explanation {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #fff3cd;
+            border-radius: 5px;
+        }
+        .shape-display {
+            text-align: center;
+            margin: 20px 0;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .shape-svg {
+            max-width: 350px;
+            height: auto;
+        }
+        #questionText {
+            margin-bottom: 15px;
+        }
+        .mode-selection {
+            text-align: center;
+            padding: 30px;
+        }
+        .mode-btn {
+            display: block;
+            width: 80%;
+            margin: 20px auto;
+            padding: 15px;
+            font-size: 18px;
+            background-color: #2196F3;
+        }
+        .mode-btn:hover {
+            background-color: #0b7dda;
+        }
+        .calculator {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+        .quiz {
+            display: none;
+        }
+        .formula {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #d9edf7;
+            border-radius: 5px;
+            font-size: 16px;
+            display: none;
+        }
+        .formula h3 {
+            margin-top: 0;
+            color: #31708f;
+        }
+        .formula p {
+            margin: 5px 0;
+        }
+        .math {
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+        }
+        .back-btn {
+            background-color: #FF9800;
+            margin-bottom: 20px;
+        }
+        .back-btn:hover {
+            background-color: #e68a00;
+        }
+    </style>
+</head>
+<body>
+    <h1>Geometry Quiz and Calculator</h1>
+    <p style="text-align: center; margin-top: 10px; margin-bottom: 20px; color: #666;">This is a Quiz and Calculator tool to help practice and test your knowledge on Geometry. These tools specifically are designed to help test and practice your knowledge on the perimeter, area, surface area and volume of different shapes. Select your preferred mode below!</p>
+    
+    <div class="container">
+        <div id="modeSelection" class="mode-selection">
+            <h2>Select Mode</h2>
+            <button class="mode-btn" onclick="selectMode('calculator')">Geometric Calculator</button>
+            <button class="mode-btn" onclick="selectMode('quiz')">Geometry Quiz</button>
+        </div>
+        
+        <!-- Calculator Mode -->
+        <div id="calculatorMode" class="calculator">
+            <button class="back-btn" onclick="backToMenu()">← Back to Menu</button>
+            <h2>Geometric Calculator</h2>
+            <select id="calcShape" onchange="showCalcFields()">
+                <option value="">Choose a shape</option>
+                <option value="rectangle">Rectangle</option>
+                <option value="triangle">Triangle</option>
+                <option value="circle">Circle</option>
+                <option value="square">Square</option>
+                <option value="cube">Cube</option>
+                <option value="cylinder">Cylinder</option>
+            </select>
+            
+            <div id="calcInputs"></div>
+            
+            <button onclick="calculate()">Calculate</button>
+            
+            <div id="calcResult" class="result" style="display:none;"></div>
+            <div id="calcFormula" class="formula"></div>
+        </div>
+        
+        <!-- Quiz Mode -->
+        <div id="quizMode" class="quiz">
+            <button class="back-btn" onclick="backToMenu()">← Back to Menu</button>
+            <h2>Geometry Quiz</h2>
+            <select id="quizShape" onchange="generateQuestion()">
+                <option value="">Select a shape</option>
+                <option value="rectangle">Rectangle</option>
+                <option value="triangle">Triangle</option>
+                <option value="circle">Circle</option>
+                <option value="square">Square</option>
+                <option value="cube">Cube</option>
+                <option value="cylinder">Cylinder</option>
+                <option value="cone">Cone</option>
+            </select>
+            
+            <div id="shapeDisplay" class="shape-display"></div>
+            
+            <div id="questionText" style="display:none;"></div>
+            
+            <input type="number" id="userAnswer" placeholder="Select a shape to begin" step="0.01" disabled>
+            
+            <button onclick="checkAnswer()" id="submitBtn" disabled>Submit</button>
+            
+            <button onclick="retryQuestion()" id="retryBtn" style="display:none; background-color: #008CBA;">Retry Question</button>
+            <button onclick="nextQuestion()" id="nextBtn" style="display:none; background-color: #FF9800;">Next Question</button>
+            
+            <div id="quizResult" class="result" style="display:none;"></div>
+            
+            <div id="explanation" class="explanation" style="display:none;"></div>
+            
+            <div id="scoreDisplay" style="margin-top: 20px; text-align: center; font-weight: bold; font-size: 18px;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Mode selection
+        function selectMode(mode) {
+            document.getElementById("modeSelection").style.display = "none";
+            
+            if (mode === "calculator") {
+                document.getElementById("calculatorMode").style.display = "block";
+            } else if (mode === "quiz") {
+                document.getElementById("quizMode").style.display = "block";
+            }
+        }
+        
+        // Back to menu
+        function backToMenu() {
+            // Hide both modes
+            document.getElementById("calculatorMode").style.display = "none";
+            document.getElementById("quizMode").style.display = "none";
+            
+            // Show mode selection
+            document.getElementById("modeSelection").style.display = "block";
+            
+            // Reset forms
+            resetCalculator();
+            resetQuiz();
+        }
+        
+        // Reset calculator
+        function resetCalculator() {
+            document.getElementById("calcShape").value = "";
+            document.getElementById("calcInputs").innerHTML = "";
+            document.getElementById("calcResult").style.display = "none";
+            document.getElementById("calcFormula").style.display = "none";
+        }
+        
+        // Reset quiz
+        function resetQuiz() {
+            document.getElementById("quizShape").value = "";
+            document.getElementById("shapeDisplay").innerHTML = "";
+            document.getElementById("questionText").style.display = "none";
+            document.getElementById("userAnswer").value = "";
+            document.getElementById("userAnswer").disabled = true;
+            document.getElementById("userAnswer").placeholder = "Select a shape to begin";
+            document.getElementById("submitBtn").disabled = true;
+            document.getElementById("quizResult").style.display = "none";
+            document.getElementById("explanation").style.display = "none";
+            document.getElementById("retryBtn").style.display = "none";
+            document.getElementById("nextBtn").style.display = "none";
+            document.getElementById("scoreDisplay").textContent = "";
+            
+            // Reset quiz variables
+            currentQuestion = null;
+            totalQuestions = 0;
+            correctAnswers = 0;
+        }
+        
+        // Calculator functions
+        function showCalcFields() {
+            const shape = document.getElementById("calcShape").value;
+            const inputs = document.getElementById("calcInputs");
+            
+            // Clear previous inputs
+            inputs.innerHTML = "";
+            
+            // Show appropriate input fields based on selected shape
+            if (shape === "rectangle") {
+                inputs.innerHTML = `
+                    <label>Length:</label>
+                    <input type="number" id="length" placeholder="Enter length">
+                    <label>Width:</label>
+                    <input type="number" id="width" placeholder="Enter width">
+                `;
+            } else if (shape === "triangle") {
+                inputs.innerHTML = `
+                    <label>Base:</label>
+                    <input type="number" id="base" placeholder="Enter base">
+                    <label>Height:</label>
+                    <input type="number" id="height" placeholder="Enter height">
+                    <label>Side 1:</label>
+                    <input type="number" id="side1" placeholder="Enter side 1">
+                    <label>Side 2:</label>
+                    <input type="number" id="side2" placeholder="Enter side 2">
+                    <label>Side 3:</label>
+                    <input type="number" id="side3" placeholder="Enter side 3">
+                `;
+            } else if (shape === "circle") {
+                inputs.innerHTML = `
+                    <label>Radius:</label>
+                    <input type="number" id="radius" placeholder="Enter radius">
+                `;
+            } else if (shape === "square") {
+                inputs.innerHTML = `
+                    <label>Side:</label>
+                    <input type="number" id="side" placeholder="Enter side length">
+                `;
+            } else if (shape === "cube") {
+                inputs.innerHTML = `
+                    <label>Side:</label>
+                    <input type="number" id="cubeSide" placeholder="Enter side length">
+                `;
+            } else if (shape === "cylinder") {
+                inputs.innerHTML = `
+                    <label>Radius:</label>
+                    <input type="number" id="cylinderRadius" placeholder="Enter radius">
+                    <label>Height:</label>
+                    <input type="number" id="cylinderHeight" placeholder="Enter height">
+                `;
+            }
+        }
+        
+        function calculate() {
+            const shape = document.getElementById("calcShape").value;
+            const result = document.getElementById("calcResult");
+            const formula = document.getElementById("calcFormula");
+            
+            // Make sure a shape is selected
+            if (!shape) {
+                alert("Please choose a shape first!");
+                return;
+            }
+            
+            // Calculate based on the selected shape
+            if (shape === "rectangle") {
+                const length = parseFloat(document.getElementById("length").value);
+                const width = parseFloat(document.getElementById("width").value);
+                
+                if (isNaN(length) || isNaN(width)) {
+                    result.innerHTML = "Please enter valid numbers for length and width";
+                    result.style.display = "block";
+                    formula.style.display = "none";
+                } else {
+                    const area = length * width;
+                    const perimeter = 2 * (length + width);
+                    result.innerHTML = `Area: ${area}<br>Perimeter: ${perimeter}`;
+                    result.style.display = "block";
+                    
+                    // Display formula
+                    formula.innerHTML = `
+                        <h3>Rectangle Formulas</h3>
+                        <p><strong>Area:</strong> <span class="math">A = length &times; width</span></p>
+                        <p><strong>Perimeter:</strong> <span class="math">P = 2 &times; (length + width)</span></p>
+                        <p>With <span class="math">length = ${length}</span> and <span class="math">width = ${width}</span>:</p>
+                        <p><span class="math">A = ${length} &times; ${width} = ${area}</span></p>
+                        <p><span class="math">P = 2 &times; (${length} + ${width}) = ${perimeter}</span></p>
+                    `;
+                    formula.style.display = "block";
+                }
+                
+            } else if (shape === "triangle") {
+                const base = parseFloat(document.getElementById("base").value);
+                const height = parseFloat(document.getElementById("height").value);
+                const side1 = parseFloat(document.getElementById("side1").value);
+                const side2 = parseFloat(document.getElementById("side2").value);
+                const side3 = parseFloat(document.getElementById("side3").value);
+                
+                if (isNaN(base) || isNaN(height) || isNaN(side1) || isNaN(side2) || isNaN(side3)) {
+                    result.innerHTML = "Please enter valid numbers for all fields";
+                    result.style.display = "block";
+                    formula.style.display = "none";
+                } else {
+                    const area = 0.5 * base * height;
+                    const perimeter = side1 + side2 + side3;
+                    result.innerHTML = `Area: ${area.toFixed(2)}<br>Perimeter: ${perimeter.toFixed(2)}`;
+                    result.style.display = "block";
+                    
+                    // Display formula
+                    formula.innerHTML = `
+                        <h3>Triangle Formulas</h3>
+                        <p><strong>Area:</strong> <span class="math">A = &frac12; &times; base &times; height</span></p>
+                        <p><strong>Perimeter:</strong> <span class="math">P = side&#8321; + side&#8322; + side&#8323;</span></p>
+                        <p>With <span class="math">base = ${base}</span>, <span class="math">height = ${height}</span>, and sides <span class="math">side&#8321; = ${side1}</span>, <span class="math">side&#8322; = ${side2}</span>, <span class="math">side&#8323; = ${side3}</span>:</p>
+                        <p><span class="math">A = &frac12; &times; ${base} &times; ${height} = ${area.toFixed(2)}</span></p>
+                        <p><span class="math">P = ${side1} + ${side2} + ${side3} = ${perimeter.toFixed(2)}</span></p>
+                    `;
+                    formula.style.display = "block";
+                }
+                
+            } else if (shape === "circle") {
+                const radius = parseFloat(document.getElementById("radius").value);
+                
+                if (isNaN(radius)) {
+                    result.innerHTML = "Please enter a valid number for radius";
+                    result.style.display = "block";
+                    formula.style.display = "none";
+                } else {
+                    const area = Math.PI * radius * radius;
+                    const circumference = 2 * Math.PI * radius;
+                    result.innerHTML = `Area: ${area.toFixed(2)}<br>Circumference: ${circumference.toFixed(2)}`;
+                    result.style.display = "block";
+                    
+                    // Display formula
+                    formula.innerHTML = `
+                        <h3>Circle Formulas</h3>
+                        <p><strong>Area:</strong> <span class="math">A = &pi; &times; radius&sup2;</span></p>
+                        <p><strong>Circumference:</strong> <span class="math">C = 2 &times; &pi; &times; radius</span></p>
+                        <p>With <span class="math">radius = ${radius}</span>:</p>
+                        <p><span class="math">A = &pi; &times; ${radius}&sup2; &asymp; ${area.toFixed(2)}</span></p>
+                        <p><span class="math">C = 2 &times; &pi; &times; ${radius} &asymp; ${circumference.toFixed(2)}</span></p>
+                    `;
+                    formula.style.display = "block";
+                }
+                
+            } else if (shape === "square") {
+                const side = parseFloat(document.getElementById("side").value);
+                
+                if (isNaN(side)) {
+                    result.innerHTML = "Please enter a valid number for side";
+                    result.style.display = "block";
+                    formula.style.display = "none";
+                } else {
+                    const area = side * side;
+                    const perimeter = 4 * side;
+                    result.innerHTML = `Area: ${area}<br>Perimeter: ${perimeter}`;
+                    result.style.display = "block";
+                    
+                    // Display formula
+                    formula.innerHTML = `
+                        <h3>Square Formulas</h3>
+                        <p><strong>Area:</strong> <span class="math">A = side&sup2;</span></p>
+                        <p><strong>Perimeter:</strong> <span class="math">P = 4 &times; side</span></p>
+                        <p>With <span class="math">side = ${side}</span>:</p>
+                        <p><span class="math">A = ${side}&sup2; = ${area}</span></p>
+                        <p><span class="math">P = 4 &times; ${side} = ${perimeter}</span></p>
+                    `;
+                    formula.style.display = "block";
+                }
+                
+            } else if (shape === "cube") {
+                const cubeSide = parseFloat(document.getElementById("cubeSide").value);
+                
+                if (isNaN(cubeSide)) {
+                    result.innerHTML = "Please enter a valid number for side";
+                    result.style.display = "block";
+                    formula.style.display = "none";
+                } else {
+                    const volume = cubeSide * cubeSide * cubeSide;
+                    const surfaceArea = 6 * cubeSide * cubeSide;
+                    result.innerHTML = `Volume: ${volume}<br>Surface Area: ${surfaceArea}`;
+                    result.style.display = "block";
+                    
+                    // Display formula
+                    formula.innerHTML = `
+                        <h3>Cube Formulas</h3>
+                        <p><strong>Volume:</strong> <span class="math">V = side&sup3;</span></p>
+                        <p><strong>Surface Area:</strong> <span class="math">SA = 6 &times; side&sup2;</span></p>
+                        <p>With <span class="math">side = ${cubeSide}</span>:</p>
+                        <p><span class="math">V = ${cubeSide}&sup3; = ${volume}</span></p>
+                        <p><span class="math">SA = 6 &times; ${cubeSide}&sup2; = ${surfaceArea}</span></p>
+                    `;
+                    formula.style.display = "block";
+                }
+                
+            } else if (shape === "cylinder") {
+                const cylinderRadius = parseFloat(document.getElementById("cylinderRadius").value);
+                const cylinderHeight = parseFloat(document.getElementById("cylinderHeight").value);
+                
+                if (isNaN(cylinderRadius) || isNaN(cylinderHeight)) {
+                    result.innerHTML = "Please enter valid numbers for radius and height";
+                    result.style.display = "block";
+                    formula.style.display = "none";
+                } else {
+                    const volume = Math.PI * cylinderRadius * cylinderRadius * cylinderHeight;
+                    const surfaceArea = 2 * Math.PI * cylinderRadius * (cylinderRadius + cylinderHeight);
+                    result.innerHTML = `Volume: ${volume.toFixed(2)}<br>Surface Area: ${surfaceArea.toFixed(2)}`;
+                    result.style.display = "block";
+                    
+                    // Display formula
+                    formula.innerHTML = `
+                        <h3>Cylinder Formulas</h3>
+                        <p><strong>Volume:</strong> <span class="math">V = &pi; &times; radius&sup2; &times; height</span></p>
+                        <p><strong>Surface Area:</strong> <span class="math">SA = 2 &times; &pi; &times; radius &times; (radius + height)</span></p>
+                        <p>With <span class="math">radius = ${cylinderRadius}</span> and <span class="math">height = ${cylinderHeight}</span>:</p>
+                        <p><span class="math">V = &pi; &times; ${cylinderRadius}&sup2; &times; ${cylinderHeight} &asymp; ${volume.toFixed(2)}</span></p>
+                        <p><span class="math">SA = 2 &times; &pi; &times; ${cylinderRadius} &times; (${cylinderRadius} + ${cylinderHeight}) &asymp; ${surfaceArea.toFixed(2)}</span></p>
+                    `;
+                    formula.style.display = "block";
+                }
+            }
+        }
+        
+        // Quiz functions
+        // Store current question data
+        let currentQuestion = null;
+        // Track score
+        let totalQuestions = 0;
+        let correctAnswers = 0;
+        
+        function generateQuestion() {
+            const shape = document.getElementById("quizShape").value;
+            const shapeDisplay = document.getElementById("shapeDisplay");
+            const questionText = document.getElementById("questionText");
+            const userAnswerInput = document.getElementById("userAnswer");
+            const submitBtn = document.getElementById("submitBtn");
+            const resultDiv = document.getElementById("quizResult");
+            const explanationDiv = document.getElementById("explanation");
+            const retryBtn = document.getElementById("retryBtn");
+            const nextBtn = document.getElementById("nextBtn");
+            
+            // Reset previous results
+            resultDiv.style.display = "none";
+            explanationDiv.style.display = "none";
+            retryBtn.style.display = "none";
+            nextBtn.style.display = "none";
+            userAnswerInput.value = ""; // Clear previous answer
+            
+            if (!shape) {
+                questionText.style.display = "none";
+                shapeDisplay.innerHTML = "";
+                userAnswerInput.placeholder = "Select a shape to begin";
+                userAnswerInput.disabled = true;
+                submitBtn.disabled = true;
+                return;
+            }
+            
+            // Enable input and button
+            userAnswerInput.disabled = false;
+            submitBtn.disabled = false;
+            userAnswerInput.placeholder = "Enter your answer";
+            userAnswerInput.focus(); // Focus on the input field
+            
+            // Generate random dimensions
+            let dimensions, questionContent, correctAnswer, formula;
+            
+            switch(shape) {
+                case "rectangle":
+                    const length = Math.floor(Math.random() * 9) + 4;
+                    const width = Math.floor(Math.random() * 9) + 4;
+                    dimensions = {length, width};
+                    shapeDisplay.innerHTML = drawRectangle(length, width);
+                    const calcType = Math.random() > 0.5 ? "area" : "perimeter";
+                    if (calcType === "area") {
+                        correctAnswer = length * width;
+                        questionContent = `What is the area of this rectangle with length ${length} and width ${width}?`;
+                        formula = `Area = length × width = ${length} × ${width} = ${correctAnswer}`;
+                    } else {
+                        correctAnswer = 2 * (length + width);
+                        questionContent = `What is the perimeter of this rectangle with length ${length} and width ${width}?`;
+                        formula = `Perimeter = 2 × (length + width) = 2 × (${length} + ${width}) = ${correctAnswer}`;
+                    }
+                    break;
+                    
+                case "triangle":
+                    const base = Math.floor(Math.random() * 9) + 4;
+                    const height = Math.floor(Math.random() * 9) + 4;
+                    dimensions = {base, height};
+                    shapeDisplay.innerHTML = drawTriangle(base, height);
+                    correctAnswer = 0.5 * base * height;
+                    questionContent = `What is the area of this triangle with base ${base} and height ${height}?`;
+                    formula = `Area = ½ × base × height = ½ × ${base} × ${height} = ${correctAnswer}`;
+                    break;
+                    
+                case "circle":
+                    const radius = Math.floor(Math.random() * 9) + 4;
+                    dimensions = {radius};
+                    shapeDisplay.innerHTML = drawCircle(radius);
+                    const circleCalcType = Math.random() > 0.5 ? "area" : "circumference";
+                    if (circleCalcType === "area") {
+                        correctAnswer = Math.PI * radius * radius;
+                        questionContent = `What is the area of this circle with radius ${radius}? (Use π ≈ 3.14)`;
+                        formula = `Area = π × radius² = π × ${radius}² ≈ 3.14 × ${radius*radius} = ${correctAnswer.toFixed(2)}`;
+                    } else {
+                        correctAnswer = 2 * Math.PI * radius;
+                        questionContent = `What is the circumference of this circle with radius ${radius}? (Use π ≈ 3.14)`;
+                        formula = `Circumference = 2 × π × radius = 2 × π × ${radius} ≈ 2 × 3.14 × ${radius} = ${correctAnswer.toFixed(2)}`;
+                    }
+                    break;
+                    
+                case "square":
+                    const side = Math.floor(Math.random() * 9) + 4;
+                    dimensions = {side};
+                    shapeDisplay.innerHTML = drawSquare(side);
+                    const squareCalcType = Math.random() > 0.5 ? "area" : "perimeter";
+                    if (squareCalcType === "area") {
+                        correctAnswer = side * side;
+                        questionContent = `What is the area of this square with side length ${side}?`;
+                        formula = `Area = side² = ${side}² = ${correctAnswer}`;
+                    } else {
+                        correctAnswer = 4 * side;
+                        questionContent = `What is the perimeter of this square with side length ${side}?`;
+                        formula = `Perimeter = 4 × side = 4 × ${side} = ${correctAnswer}`;
+                    }
+                    break;
+                    
+                case "cube":
+                    const cubeSide = Math.floor(Math.random() * 9) + 4;
+                    dimensions = {cubeSide};
+                    shapeDisplay.innerHTML = drawCube(cubeSide);
+                    const cubeCalcType = Math.random() > 0.5 ? "volume" : "surfaceArea";
+                    if (cubeCalcType === "volume") {
+                        correctAnswer = cubeSide * cubeSide * cubeSide;
+                        questionContent = `What is the volume of this cube with side length ${cubeSide}?`;
+                        formula = `Volume = side³ = ${cubeSide}³ = ${correctAnswer}`;
+                    } else {
+                        correctAnswer = 6 * cubeSide * cubeSide;
+                        questionContent = `What is the surface area of this cube with side length ${cubeSide}?`;
+                        formula = `Surface Area = 6 × side² = 6 × ${cubeSide}² = ${correctAnswer}`;
+                    }
+                    break;
+                    
+                case "cylinder":
+                    const cylinderRadius = Math.floor(Math.random() * 9) + 4;
+                    const cylinderHeight = Math.floor(Math.random() * 9) + 4;
+                    dimensions = {cylinderRadius, cylinderHeight};
+                    shapeDisplay.innerHTML = drawCylinder(cylinderRadius, cylinderHeight);
+                    const cylinderCalcType = Math.random() > 0.5 ? "volume" : "surfaceArea";
+                    if (cylinderCalcType === "volume") {
+                        correctAnswer = Math.PI * cylinderRadius * cylinderRadius * cylinderHeight;
+                        questionContent = `What is the volume of this cylinder with radius ${cylinderRadius} and height ${cylinderHeight}? (Use π ≈ 3.14)`;
+                        formula = `Volume = π × radius² × height = π × ${cylinderRadius}² × ${cylinderHeight} ≈ 3.14 × ${cylinderRadius*cylinderRadius} × ${cylinderHeight} = ${correctAnswer.toFixed(2)}`;
+                    } else {
+                        correctAnswer = 2 * Math.PI * cylinderRadius * (cylinderRadius + cylinderHeight);
+                        questionContent = `What is the surface area of this cylinder with radius ${cylinderRadius} and height ${cylinderHeight}? (Use π ≈ 3.14)`;
+                        formula = `Surface Area = 2 × π × radius × (radius + height) = 2 × π × ${cylinderRadius} × (${cylinderRadius} + ${cylinderHeight}) ≈ 2 × 3.14 × ${cylinderRadius} × ${cylinderRadius + cylinderHeight} = ${correctAnswer.toFixed(2)}`;
+                    }
+                    break;
+                    
+                case "cone":
+                    const coneRadius = Math.floor(Math.random() * 9) + 4;
+                    const coneHeight = Math.floor(Math.random() * 9) + 4;
+                    dimensions = {coneRadius, coneHeight};
+                    shapeDisplay.innerHTML = drawCone(coneRadius, coneHeight);
+                    const coneCalcType = Math.random() > 0.5 ? "volume" : "surfaceArea";
+                    if (coneCalcType === "volume") {
+                        correctAnswer = (1/3) * Math.PI * coneRadius * coneRadius * coneHeight;
+                        questionContent = `What is the volume of this cone with radius ${coneRadius} and height ${coneHeight}? (Use π ≈ 3.14)`;
+                        formula = `Volume = ⅓ × π × radius² × height = ⅓ × π × ${coneRadius}² × ${coneHeight} ≈ ⅓ × 3.14 × ${coneRadius*coneRadius} × ${coneHeight} = ${correctAnswer.toFixed(2)}`;
+                    } else {
+                        // Surface area = π × radius × (radius + slant height)
+                        // slant height = √(radius² + height²)
+                        const slantHeight = Math.sqrt(coneRadius * coneRadius + coneHeight * coneHeight);
+                        correctAnswer = Math.PI * coneRadius * (coneRadius + slantHeight);
+                        questionContent = `What is the surface area of this cone with radius ${coneRadius} and height ${coneHeight}? (Use π ≈ 3.14)`;
+                        formula = `Surface Area = π × radius × (radius + slant height) = π × ${coneRadius} × (${coneRadius} + ${slantHeight.toFixed(2)}) ≈ 3.14 × ${coneRadius} × ${(coneRadius + slantHeight).toFixed(2)} = ${correctAnswer.toFixed(2)}`;
+                    }
+                    break;
+            }
+            
+            // Store current question data
+            currentQuestion = {
+                shape: shape,
+                dimensions: dimensions,
+                correctAnswer: correctAnswer,
+                formula: formula
+            };
+            
+            // Display question
+            questionText.textContent = questionContent;
+            questionText.style.display = "block";
+        }
+        
+        function checkAnswer() {
+            if (!currentQuestion) return;
+            
+            const userAnswer = parseFloat(document.getElementById("userAnswer").value);
+            const resultDiv = document.getElementById("quizResult");
+            const explanationDiv = document.getElementById("explanation");
+            const retryBtn = document.getElementById("retryBtn");
+            const nextBtn = document.getElementById("nextBtn");
+            const scoreDisplay = document.getElementById("scoreDisplay");
+            
+            if (isNaN(userAnswer)) {
+                resultDiv.textContent = "Please enter a valid number";
+                resultDiv.className = "result incorrect";
+                resultDiv.style.display = "block";
+                return;
+            }
+            
+            // Check if answer is correct (allowing for small rounding differences)
+            const isCorrect = Math.abs(userAnswer - currentQuestion.correctAnswer) < 0.1;
+            
+            // Update score only for the first attempt at each question
+            if (totalQuestions === 0 || (resultDiv.style.display === "none" && totalQuestions > 0)) {
+                totalQuestions++;
+                if (isCorrect) {
+                    correctAnswers++;
+                }
+            }
+            
+            // Update score display
+            scoreDisplay.textContent = `Score: ${correctAnswers} / ${totalQuestions}`;
+            
+            if (isCorrect) {
+                resultDiv.textContent = "Correct! Well done!";
+                resultDiv.className = "result correct";
+                // Show next question button
+                nextBtn.style.display = "block";
+                retryBtn.style.display = "none";
+            } else {
+                resultDiv.textContent = `Incorrect. The correct answer is ${currentQuestion.correctAnswer.toFixed(2)}`;
+                resultDiv.className = "result incorrect";
+                // Show retry button
+                retryBtn.style.display = "block";
+                nextBtn.style.display = "none";
+            }
+            
+            resultDiv.style.display = "block";
+            
+            // Show explanation
+            explanationDiv.innerHTML = `
+                <h3>Explanation:</h3>
+                <p>${currentQuestion.formula}</p>
+            `;
+            explanationDiv.style.display = "block";
+        }
+        
+        function retryQuestion() {
+            // Reset the form but keep the same question
+            const userAnswerInput = document.getElementById("userAnswer");
+            const resultDiv = document.getElementById("quizResult");
+            const explanationDiv = document.getElementById("explanation");
+            const retryBtn = document.getElementById("retryBtn");
+            const nextBtn = document.getElementById("nextBtn");
+            
+            // Clear user input and results
+            userAnswerInput.value = "";
+            resultDiv.style.display = "none";
+            explanationDiv.style.display = "none";
+            retryBtn.style.display = "none";
+            nextBtn.style.display = "none";
+            
+            // Focus on the input field
+            userAnswerInput.focus();
+        }
+        
+        function nextQuestion() {
+            // Generate a completely new question with the same shape type
+            generateQuestion();
+        }
+        
+        function regenerateSameQuestion() {
+            if (!currentQuestion) return;
+            
+            const shape = currentQuestion.shape;
+            const dimensions = currentQuestion.dimensions;
+            const shapeDisplay = document.getElementById("shapeDisplay");
+            const questionText = document.getElementById("questionText");
+            
+            // Redraw the shape
+            switch(shape) {
+                case "rectangle":
+                    shapeDisplay.innerHTML = drawRectangle(dimensions.length, dimensions.width);
+                    break;
+                case "triangle":
+                    shapeDisplay.innerHTML = drawTriangle(dimensions.base, dimensions.height);
+                    break;
+                case "circle":
+                    shapeDisplay.innerHTML = drawCircle(dimensions.radius);
+                    break;
+                case "square":
+                    shapeDisplay.innerHTML = drawSquare(dimensions.side);
+                    break;
+                case "cube":
+                    shapeDisplay.innerHTML = drawCube(dimensions.cubeSide);
+                    break;
+                case "cylinder":
+                    shapeDisplay.innerHTML = drawCylinder(dimensions.cylinderRadius, dimensions.cylinderHeight);
+                    break;
+                case "cone":
+                    shapeDisplay.innerHTML = drawCone(dimensions.coneRadius, dimensions.coneHeight);
+                    break;
+            }
+            
+            // Re-display the question
+            questionText.style.display = "block";
+        }
+        
+        // Drawing functions for shapes
+        function drawRectangle(length, width) {
+            const svg = `
+                <svg width="300" height="180" viewBox="0 0 300 180" class="shape-svg">
+                    <rect x="100" y="45" width="${length*10}" height="${width*10}" 
+                          fill="#4CAF50" fill-opacity="0.5" stroke="#333" stroke-width="2"/>
+                    <text x="${100 + length*5}" y="40" text-anchor="middle" font-family="Arial">Length: ${length}</text>
+                    <text x="85" y="${45 + width*5}" text-anchor="end" font-family="Arial" transform="rotate(-90 85,${45 + width*5})">Width: ${width}</text>
+                </svg>
+            `;
+            return svg;
+        }
+        
+        function drawTriangle(base, height) {
+            const svg = `
+                <svg width="300" height="180" viewBox="0 0 300 180" class="shape-svg">
+                    <polygon points="100,145 ${100+base*10},145 ${100+base*5},${145-height*10}" 
+                             fill="#2196F3" fill-opacity="0.5" stroke="#333" stroke-width="2"/>
+                    <text x="${100 + base*5}" y="165" text-anchor="middle" font-family="Arial">Base: ${base}</text>
+                    <text x="85" y="${145 - height*5}" text-anchor="end" font-family="Arial" transform="rotate(-90 85,${145 - height*5})">Height: ${height}</text>
+                </svg>
+            `;
+            return svg;
+        }
+        
+        function drawCircle(radius) {
+            const svg = `
+                <svg width="300" height="180" viewBox="0 0 300 180" class="shape-svg">
+                    <circle cx="150" cy="90" r="${radius*5}" 
+                            fill="#FF9800" fill-opacity="0.5" stroke="#333" stroke-width="2"/>
+                    <line x1="150" y1="90" x2="${150+radius*5}" y2="90" stroke="#333" stroke-width="2" stroke-dasharray="4"/>
+                    <text x="${150+radius*2.5}" y="75" text-anchor="middle" font-family="Arial">Radius: ${radius}</text>
+                </svg>
+            `;
+            return svg;
+        }
+        
+        function drawSquare(side) {
+            const svg = `
+                <svg width="300" height="180" viewBox="0 0 300 180" class="shape-svg">
+                    <rect x="100" y="45" width="${side*10}" height="${side*10}" 
+                          fill="#9C27B0" fill-opacity="0.5" stroke="#333" stroke-width="2"/>
+                    <text x="${100 + side*5}" y="40" text-anchor="middle" font-family="Arial">Side: ${side}</text>
+                </svg>
+            `;
+            return svg;
+        }
+        
+        function drawCube(side) {
+            const svg = `
+                <svg width="300" height="180" viewBox="0 0 300 180" class="shape-svg">
+                    <!-- Front face -->
+                    <polygon points="100,70 ${100+side*5},70 ${100+side*5},${70+side*5} 100,${70+side*5}" 
+                             fill="#FF5722" fill-opacity="0.5" stroke="#333" stroke-width="2"/>
+                    <!-- Top face -->
+                    <polygon points="100,70 ${100+side*2.5},${70-side*2.5} ${100+side*2.5+side*5},${70-side*2.5} ${100+side*5},70" 
+                             fill="#FF9800" fill-opacity="0.5" stroke="#333" stroke-width="2"/>
+                    <!-- Side face -->
+                    <polygon points="${100+side*5},70 ${100+side*5},${70+side*5} ${100+side*2.5+side*5},${70+side*5-side*2.5} ${100+side*2.5+side*5},${70-side*2.5}" 
+                             fill="#FFC107" fill-opacity="0.5" stroke="#333" stroke-width="2"/>
+                    <text x="${100 + side*2.5}" y="55" text-anchor="middle" font-family="Arial">Side: ${side}</text>
+                </svg>
+            `;
+            return svg;
+        }
+        
+        function drawCylinder(radius, height) {
+            const svg = `
+                <svg width="300" height="180" viewBox="0 0 300 180" class="shape-svg">
+                    <!-- Top ellipse -->
+                    <ellipse cx="150" cy="45" rx="${radius*5}" ry="15" 
+                             fill="#00BCD4" fill-opacity="0.5" stroke="#333" stroke-width="2"/>
+                    <!-- Bottom ellipse -->
+                    <ellipse cx="150" cy="${45+height*10}" rx="${radius*5}" ry="15" 
+                             fill="#00BCD4" fill-opacity="0.5" stroke="#333" stroke-width="2"/>
+                    <!-- Sides -->
+                    <line x1="${150-radius*5}" y1="45" x2="${150-radius*5}" y2="${45+height*10}" stroke="#333" stroke-width="2"/>
+                    <line x1="${150+radius*5}" y1="45" x2="${150+radius*5}" y2="${45+height*10}" stroke="#333" stroke-width="2"/>
+                    <text x="${150+radius*5 + 20}" y="${45+height*5}" font-family="Arial" dominant-baseline="middle">Height: ${height}</text>
+                    <line x1="150" y1="45" x2="${150+radius*5}" y2="45" stroke="#333" stroke-width="2" stroke-dasharray="4"/>
+                    <text x="${150+radius*2.5}" y="30" text-anchor="middle" font-family="Arial">Radius: ${radius}</text>
+                </svg>
+            `;
+            return svg;
+        }
+        
+        function drawCone(radius, height) {
+            const svg = `
+                <svg width="300" height="180" viewBox="0 0 300 180" class="shape-svg">
+                    <!-- Base ellipse -->
+                    <ellipse cx="150" cy="${45+height*10}" rx="${radius*5}" ry="15" 
+                             fill="#E91E63" fill-opacity="0.5" stroke="#333" stroke-width="2"/>
+                    <!-- Sides -->
+                    <line x1="150" y1="45" x2="${150-radius*5}" y2="${45+height*10}" stroke="#333" stroke-width="2"/>
+                    <line x1="150" y1="45" x2="${150+radius*5}" y2="${45+height*10}" stroke="#333" stroke-width="2"/>
+                    <text x="${150+radius*5 + 20}" y="${45+height*5}" font-family="Arial" dominant-baseline="middle">Height: ${height}</text>
+                    <line x1="150" y1="${45+height*10}" x2="${150+radius*5}" y2="${45+height*10}" stroke="#333" stroke-width="2" stroke-dasharray="4"/>
+                    <text x="${150+radius*2.5}" y="${45+height*10 + 20}" text-anchor="middle" font-family="Arial">Radius: ${radius}</text>
+                </svg>
+            `;
+            return svg;
+        }
+    </script>
+</body>
+</html>
