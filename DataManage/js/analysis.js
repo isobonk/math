@@ -301,9 +301,9 @@ function drawBoxPlot(data, q1, median, q3, min, max, outliers) {
 
     // Helper to draw text if space allows (simple check)
     const labels = [
-        { val: q1, text: "Q1", y: yCenter - 40 },
-        { val: q3, text: "Q3", y: yCenter - 40 },
-        { val: median, text: "Median", y: yCenter - 45 }
+        { val: q1, text: "Q1", y: yCenter - 60 },
+        { val: q3, text: "Q3", y: yCenter - 60 },
+        { val: median, text: "Median", y: yCenter - 65 }
     ];
 
     labels.forEach(l => {
