@@ -45,7 +45,7 @@ const studyTopics = [
         content: `
             <p>Visualizing data helps us see patterns, trends, and outliers.</p>
             <ul style="margin: 10px 20px;">
-                <li><strong>Histogram:</strong> A bar graph-like representation of data that groups a range of outcome into columns (bins). Good for showing frequency distribution.</li>
+                <li><strong>Histogram:</strong> A bar graph-like representation of data that groups a range of outcome into columns. Good for showing frequency distribution.</li>
                 <li><strong>Box Plot (Box-and-Whisker):</strong> Displays the five-number summary: minimum, first quartile, median, third quartile, and maximum. Excellent for spotting outliers.</li>
                 <li><strong>Scatter Plot:</strong> Uses dots to represent values for two different numeric variables. Used to observe relationships (correlations) between variables.</li>
             </ul>
