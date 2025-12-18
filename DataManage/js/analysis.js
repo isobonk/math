@@ -166,6 +166,154 @@ function clearScatter() {
     if (scatterChartInstance) scatterChartInstance.destroy();
 }
 
+// --- PART 3: Box and Whiskers Plot ---
+
+function generateBoxPlot() {
+    const rawData = document.getElementById('box-input').value;
+    const data = parseInput(rawData);
+
+    if (data.length < 5) {
+        alert("Please enter at least 5 numbers to generate a meaningful Box Plot.");
+        return;
+    }
+
+    const sorted = [...data].sort((a, b) => a - b);
+    const { q1, q3, iqr } = MathUtils.quartiles(sorted);
+    const median = MathUtils.median(sorted);
+    const min = sorted[0];
+    const max = sorted[sorted.length - 1];
+    const outliers = MathUtils.getOutliers(data);
+
+    // Display Stats
+    const statsHtml = `
+        <div class="stat-box"><span class="stat-label">Minimum</span><span class="stat-value">${min}</span></div>
+        <div class="stat-box"><span class="stat-label">Q1</span><span class="stat-value">${q1}</span></div>
+        <div class="stat-box"><span class="stat-label">Median</span><span class="stat-value">${median}</span></div>
+        <div class="stat-box"><span class="stat-label">Q3</span><span class="stat-value">${q3}</span></div>
+        <div class="stat-box"><span class="stat-label">Maximum</span><span class="stat-value">${max}</span></div>
+        <div class="stat-box"><span class="stat-label">IQR</span><span class="stat-value">${iqr}</span></div>
+        <div class="stat-box"><span class="stat-label">Outliers</span><span class="stat-value" style="color:${outliers.length ? 'red' : 'green'}">${outliers.join(', ') || 'None'}</span></div>
+    `;
+
+    document.getElementById('box-stats').innerHTML = statsHtml;
+    document.getElementById('box-output').style.display = 'block';
+
+    drawBoxPlot(sorted, q1, median, q3, min, max, outliers);
+}
+
+function randomizeBoxData() {
+    const data = MathUtils.generateData(15, 1, 100);
+    // Add deliberate outliers for demonstration sometimes
+    if (Math.random() > 0.5) data.push(120, 130);
+    document.getElementById('box-input').value = data.join(', ');
+}
+
+function clearBoxPlot() {
+    document.getElementById('box-input').value = '';
+    document.getElementById('box-output').style.display = 'none';
+}
+
+function drawBoxPlot(data, q1, median, q3, min, max, outliers) {
+    const canvas = document.getElementById('boxChart');
+    const ctx = canvas.getContext('2d');
+
+    // Adjust canvas resolution
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.scale(dpr, dpr);
+
+    const width = rect.width;
+    const height = rect.height;
+
+    ctx.clearRect(0, 0, width, height);
+
+    // Margins and Scale
+    const padding = 40;
+    const plotWidth = width - (padding * 2);
+    const dataMin = Math.min(min, ...outliers); // Include outliers in scale
+    const dataMax = Math.max(max, ...outliers);
+    const range = dataMax - dataMin || 1; // avoid div 0
+
+    const mapX = (val) => padding + ((val - dataMin) / range) * plotWidth;
+    const yCenter = height / 2;
+    const boxHeight = 60;
+
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 2;
+    ctx.fillStyle = '#6C63FF';
+    ctx.font = '12px Inter';
+    ctx.textAlign = 'center';
+
+    // 1. Draw Range Line (Whisker to Whisker)
+    // Theoretically whiskers go to min/max excluding outliers, but often simplified to min/max. 
+    // Let's stick to using the 'min' and 'max' passed (which usually implies range of non-outliers if calculated strictly, 
+    // but here we passed simple sorted min/max. 
+    // Let's refine: The 'min'/'max' displayed are usually ALL data. 
+    // Standard Box plot: Whiskers go to largest/smallest value within 1.5 IQR. 
+    // Logic: calculate true whisker bounds.
+
+    const iqr = q3 - q1;
+    const lowerFence = q1 - 1.5 * iqr;
+    const upperFence = q3 + 1.5 * iqr;
+
+    // Find actual values inside fences
+    const insideValues = data.filter(d => d >= lowerFence && d <= upperFence);
+    const whiskerMin = insideValues[0];
+    const whiskerMax = insideValues[insideValues.length - 1];
+
+    // Draw Line from Whisker Min to Whisker Max
+    ctx.beginPath();
+    ctx.moveTo(mapX(whiskerMin), yCenter);
+    ctx.lineTo(mapX(whiskerMax), yCenter);
+    ctx.stroke();
+
+    // 2. Draw Box (Q1 to Q3)
+    ctx.fillStyle = 'rgba(108, 99, 255, 0.2)';
+    ctx.fillRect(mapX(q1), yCenter - boxHeight / 2, mapX(q3) - mapX(q1), boxHeight);
+    ctx.strokeRect(mapX(q1), yCenter - boxHeight / 2, mapX(q3) - mapX(q1), boxHeight);
+
+    // 3. Draw Median Line
+    ctx.beginPath();
+    ctx.moveTo(mapX(median), yCenter - boxHeight / 2);
+    ctx.lineTo(mapX(median), yCenter + boxHeight / 2);
+    ctx.stroke();
+
+    // 4. Draw Whisker Caps
+    ctx.beginPath();
+    ctx.moveTo(mapX(whiskerMin), yCenter - 10);
+    ctx.lineTo(mapX(whiskerMin), yCenter + 10);
+    ctx.moveTo(mapX(whiskerMax), yCenter - 10);
+    ctx.lineTo(mapX(whiskerMax), yCenter + 10);
+    ctx.stroke();
+
+    // 5. Draw Outliers
+    ctx.fillStyle = '#F72585';
+    outliers.forEach(out => {
+        ctx.beginPath();
+        ctx.arc(mapX(out), yCenter, 4, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    // 6. Draw Labels (Axis)
+    ctx.fillStyle = '#333';
+
+    // Helper to draw text if space allows (simple check)
+    const labels = [
+        { val: whiskerMin, text: whiskerMin.toString(), y: yCenter + 40 },
+        { val: whiskerMax, text: whiskerMax.toString(), y: yCenter + 40 },
+        { val: q1, text: "Q1", y: yCenter - 40 },
+        { val: q3, text: "Q3", y: yCenter - 40 },
+        { val: median, text: "Med", y: yCenter - 45 }
+    ];
+
+    labels.forEach(l => {
+        ctx.fillText(l.text, mapX(l.val), l.y);
+        if (l.text.length < 3) ctx.fillText(l.val, mapX(l.val), l.y + 15); // Add value below label if short
+    });
+}
+
 
 // --- Helper Functions ---
 
