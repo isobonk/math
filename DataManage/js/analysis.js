@@ -303,7 +303,7 @@ function drawBoxPlot(data, q1, median, q3, min, max, outliers) {
     const labels = [
         { val: q1, text: "Q1", y: yCenter - 40 },
         { val: q3, text: "Q3", y: yCenter - 40 },
-        { val: median, text: "Med", y: yCenter - 45 }
+        { val: median, text: "Median", y: yCenter - 45 }
     ];
 
     labels.forEach(l => {
