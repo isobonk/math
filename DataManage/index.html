@@ -13,6 +13,9 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;700&display=swap"
         rel="stylesheet">
 
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -45,7 +48,9 @@
 
         <!-- SECTION 2: DATA ANALYSIS -->
         <section id="analysis-section" class="content-section">
+            <!-- 2A. Single Variable Stats -->
             <div class="card">
+                <h2>1. Single Variable Statistics</h2>
                 <div class="input-area">
                     <div class="dataset-group">
                         <h3>Enter Data Points</h3>
@@ -58,18 +63,55 @@
 
                     <div class="controls-grid" style="margin-top: 25px;">
                         <button class="btn btn-primary" onclick="analyzeData()">📊 Calculate Statistics</button>
-                        <button class="btn btn-error" onclick="clearAll()"
-                            style="background-color: #ffebee; color: #d32f2f;">Clear All</button>
+                        <button class="btn btn-error" onclick="clearStats()"
+                            style="background-color: #ffebee; color: #d32f2f;">Clear Stats</button>
                     </div>
                 </div>
             </div>
 
-            <!-- Results Display -->
+            <!-- Single Var Results -->
             <div id="results-area" class="card" style="display: none;">
                 <h2>Statistical Summary</h2>
+                <div class="results-grid" id="stats-grid-1"></div>
+            </div>
 
-                <div class="results-grid" id="stats-grid-1">
-                    <!-- Stats injected here -->
+            <!-- 2B. Scatter Plot Tool -->
+            <div class="card" style="margin-top: 40px; border-top: 4px solid var(--primary-color);">
+                <h2>2. Two Variable Scatter Plot</h2>
+                <p style="color:#666; margin-bottom:20px;">Enter two datasets (X and Y) to visualize relationship and
+                    Line of Best Fit.</p>
+
+                <div class="input-area">
+                    <div class="controls-grid">
+                        <div class="dataset-group">
+                            <h3>X Values (Independent)</h3>
+                            <textarea id="scatter-x" rows="3" placeholder="e.g., 1, 2, 3, 4, 5"></textarea>
+                            <button class="btn btn-secondary" style="margin-top:5px; width:100%"
+                                onclick="randomizeScatterCtx('x')">🎲 Randomize X</button>
+                        </div>
+                        <div class="dataset-group">
+                            <h3>Y Values (Dependent)</h3>
+                            <textarea id="scatter-y" rows="3" placeholder="e.g., 2, 4, 5, 4, 8"></textarea>
+                            <button class="btn btn-secondary" style="margin-top:5px; width:100%"
+                                onclick="randomizeScatterCtx('y')">🎲 Randomize Y</button>
+                        </div>
+                    </div>
+
+                    <div class="controls-grid" style="margin-top: 25px;">
+                        <button class="btn btn-primary" onclick="generateScatterPlot()">📈 Generate Scatter
+                            Plot</button>
+                        <button class="btn btn-error" onclick="clearScatter()"
+                            style="background-color: #ffebee; color: #d32f2f;">Clear Plot</button>
+                    </div>
+                </div>
+
+                <!-- Chart Output -->
+                <div id="scatter-output" style="display:none; margin-top:30px;">
+                    <div class="chart-container">
+                        <canvas id="scatterChart"></canvas>
+                    </div>
+                    <div id="scatter-stats"
+                        style="text-align:center; margin-top:15px; font-weight:bold; color:var(--primary-color);"></div>
                 </div>
             </div>
         </section>
