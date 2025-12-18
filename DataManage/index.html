@@ -57,12 +57,12 @@
                         <textarea id="data-input-1" rows="3"
                             placeholder="Enter numbers separated by commas or spaces (e.g., 12, 15, 8, 20)"></textarea>
                         <div class="controls-grid" style="margin-top: 10px;">
-                            <button class="btn btn-secondary" onclick="randomizeData(1)">🎲 Randomize</button>
+                            <button class="btn btn-secondary" onclick="randomizeData(1)">Randomize</button>
                         </div>
                     </div>
 
                     <div class="controls-grid" style="margin-top: 25px;">
-                        <button class="btn btn-primary" onclick="analyzeData()">📊 Calculate Statistics</button>
+                        <button class="btn btn-primary" onclick="analyzeData()">Calculate Statistics</button>
                         <button class="btn btn-error" onclick="clearStats()"
                             style="background-color: #ffebee; color: #d32f2f;">Clear Stats</button>
                     </div>
@@ -87,19 +87,18 @@
                             <h3>X Values (Independent)</h3>
                             <textarea id="scatter-x" rows="3" placeholder="e.g., 1, 2, 3, 4, 5"></textarea>
                             <button class="btn btn-secondary" style="margin-top:5px; width:100%"
-                                onclick="randomizeScatterCtx('x')">🎲 Randomize X</button>
+                                onclick="randomizeScatterCtx('x')">Randomize X</button>
                         </div>
                         <div class="dataset-group">
                             <h3>Y Values (Dependent)</h3>
                             <textarea id="scatter-y" rows="3" placeholder="e.g., 2, 4, 5, 4, 8"></textarea>
                             <button class="btn btn-secondary" style="margin-top:5px; width:100%"
-                                onclick="randomizeScatterCtx('y')">🎲 Randomize Y</button>
+                                onclick="randomizeScatterCtx('y')">Randomize Y</button>
                         </div>
                     </div>
 
                     <div class="controls-grid" style="margin-top: 25px;">
-                        <button class="btn btn-primary" onclick="generateScatterPlot()">📈 Generate Scatter
-                            Plot</button>
+                        <button class="btn btn-primary" onclick="generateScatterPlot()">Generate Scatter Plot</button>
                         <button class="btn btn-error" onclick="clearScatter()"
                             style="background-color: #ffebee; color: #d32f2f;">Clear Plot</button>
                     </div>

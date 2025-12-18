@@ -86,7 +86,8 @@ function renderScatterChart(xData, yData) {
     // Calculate Correlation for display
     const r = MathUtils.correlation(xData, yData).toFixed(3);
     document.getElementById('scatter-stats').innerHTML =
-        `Correlation (r): ${r} | Line: y = ${m.toFixed(2)}x + ${b.toFixed(2)}`;
+        `<div>Correlation (r): ${r}</div>
+         <div style="margin-top:5px;">Line of Best Fit: y = ${m.toFixed(2)}x + ${b.toFixed(2)}</div>`;
 
     // Render Chart
     scatterChartInstance = new Chart(ctx, {
