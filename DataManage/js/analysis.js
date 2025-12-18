@@ -329,25 +329,36 @@ function drawBoxPlot(data, q1, median, q3, min, max, outliers) {
     else if (normalizedStep > 2) step *= 5;
     else if (normalizedStep > 1) step *= 2;
 
-    const startTick = Math.floor(dataMin / step) * step;
-    const endTick = Math.ceil(dataMax / step) * step;
+    const startTick = Math.ceil(dataMin / step) * step;
+    const endTick = Math.floor(dataMax / step) * step;
 
     ctx.fillStyle = '#666';
     ctx.textAlign = 'center';
     ctx.font = '10px Inter';
 
-    for (let t = startTick; t <= endTick; t += step) {
-        // Prevent floating point errors
-        const tickVal = parseFloat(t.toPrecision(12));
-        const x = mapX(tickVal);
+    const drawTick = (val) => {
+        const x = mapX(val);
+        ctx.beginPath();
+        ctx.moveTo(x, axisY);
+        ctx.lineTo(x, axisY + 5);
+        ctx.stroke();
+        ctx.fillText(parseFloat(val.toPrecision(12)), x, axisY + 15);
+    };
 
-        // Only draw if within bounds (with slight buffer)
-        if (x >= padding - 10 && x <= width - padding + 10) {
-            ctx.beginPath();
-            ctx.moveTo(x, axisY);
-            ctx.lineTo(x, axisY + 5);
-            ctx.stroke();
-            ctx.fillText(tickVal, x, axisY + 15);
+    // Always draw Min and Max on axis
+    drawTick(dataMin);
+    if (dataMax !== dataMin) drawTick(dataMax);
+
+    // Draw intermediate nice ticks if they don't overlap with Min/Max
+    const minX = mapX(dataMin);
+    const maxX = mapX(dataMax);
+    const overlapPadding = 20; // pixels to avoid text overlap
+
+    for (let t = startTick; t <= endTick; t += step) {
+        const x = mapX(t);
+        // Check overlap with Min (start) and Max (end)
+        if (x > minX + overlapPadding && x < maxX - overlapPadding) {
+            drawTick(t);
         }
     }
 }
