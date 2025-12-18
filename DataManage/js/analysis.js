@@ -210,7 +210,7 @@ function displayStats(data, setNum) {
             <span class="stat-value">${range}</span>
         </div>
         <div class="stat-box">
-            <span class="stat-label">STD DEV</span>
+            <span class="stat-label">Standard Deviation</span>
             <span class="stat-value">${stdDev}</span>
         </div>
         <div class="stat-box">

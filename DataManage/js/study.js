@@ -23,7 +23,7 @@ const studyTopics = [
     },
     {
         id: "data-spread",
-        title: "Measures of Spread (Range, IQR, Std Dev)",
+        title: "Measures of Spread (Range, IQR, Standard Deviation)",
         content: `
             <p><strong>Measures of Spread</strong> describe how similar or varied the set of observed values are for a particular variable.</p>
             <ul style="margin: 10px 20px;">
