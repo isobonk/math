@@ -300,6 +300,7 @@ function drawBoxPlot(data, q1, median, q3, min, max, outliers) {
     ctx.fillStyle = '#333';
 
     // Helper to draw text if space allows (simple check)
+    ctx.font = '10px Inter';
     const labels = [
         { val: q1, text: "Q1", y: yCenter - 60 },
         { val: q3, text: "Q3", y: yCenter - 60 },
