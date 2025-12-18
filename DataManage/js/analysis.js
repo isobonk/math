@@ -301,8 +301,6 @@ function drawBoxPlot(data, q1, median, q3, min, max, outliers) {
 
     // Helper to draw text if space allows (simple check)
     const labels = [
-        { val: whiskerMin, text: whiskerMin.toString(), y: yCenter + 40 },
-        { val: whiskerMax, text: whiskerMax.toString(), y: yCenter + 40 },
         { val: q1, text: "Q1", y: yCenter - 40 },
         { val: q3, text: "Q3", y: yCenter - 40 },
         { val: median, text: "Med", y: yCenter - 45 }
@@ -310,8 +308,48 @@ function drawBoxPlot(data, q1, median, q3, min, max, outliers) {
 
     labels.forEach(l => {
         ctx.fillText(l.text, mapX(l.val), l.y);
-        if (l.text.length < 3) ctx.fillText(l.val, mapX(l.val), l.y + 15); // Add value below label if short
+        ctx.fillText(l.val, mapX(l.val), l.y + 15);
     });
+
+    // 7. Draw Number Line (Axis)
+    const axisY = yCenter + 50; // Position below the box plot
+    ctx.beginPath();
+    ctx.moveTo(padding, axisY);
+    ctx.lineTo(width - padding, axisY);
+    ctx.strokeStyle = '#888';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // Calculate nice ticks
+    const roughStep = range / 10;
+    const magnitude = Math.pow(10, Math.floor(Math.log10(roughStep)));
+    const normalizedStep = roughStep / magnitude;
+    let step = magnitude;
+    if (normalizedStep > 5) step *= 10;
+    else if (normalizedStep > 2) step *= 5;
+    else if (normalizedStep > 1) step *= 2;
+
+    const startTick = Math.floor(dataMin / step) * step;
+    const endTick = Math.ceil(dataMax / step) * step;
+
+    ctx.fillStyle = '#666';
+    ctx.textAlign = 'center';
+    ctx.font = '10px Inter';
+
+    for (let t = startTick; t <= endTick; t += step) {
+        // Prevent floating point errors
+        const tickVal = parseFloat(t.toPrecision(12));
+        const x = mapX(tickVal);
+
+        // Only draw if within bounds (with slight buffer)
+        if (x >= padding - 10 && x <= width - padding + 10) {
+            ctx.beginPath();
+            ctx.moveTo(x, axisY);
+            ctx.lineTo(x, axisY + 5);
+            ctx.stroke();
+            ctx.fillText(tickVal, x, axisY + 15);
+        }
+    }
 }
 
 
