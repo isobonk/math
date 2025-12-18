@@ -203,7 +203,7 @@ function displayStats(data, setNum) {
         </div>
         <div class="stat-box">
             <span class="stat-label">MODE</span>
-            <span class="stat-value" style="font-size:1.2rem">${mode || "No mode"}</span>
+            <span class="stat-value" style="font-size:1.2rem">${mode || "None"}</span>
         </div>
         <div class="stat-box">
             <span class="stat-label">RANGE</span>
