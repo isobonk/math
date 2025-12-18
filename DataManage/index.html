@@ -107,6 +107,37 @@
                         style="text-align:center; margin-top:15px; font-weight:bold; color:var(--primary-color);"></div>
                 </div>
             </div>
+
+            <!-- 2C. Box Plot Tool -->
+            <div class="card" style="margin-top: 40px; border-top: 4px solid var(--primary-color);">
+                <h2>3. Box and Whiskers Plot</h2>
+                <p style="color:#666; margin-bottom:20px;">Enter a single dataset to generate a Box Plot and view
+                    quartiles.</p>
+
+                <div class="input-area">
+                    <div class="dataset-group">
+                        <h3>Enter Data Points</h3>
+                        <textarea id="box-input" rows="3" placeholder="e.g., 12, 15, 8, 20, 25"></textarea>
+                        <div class="controls-grid" style="margin-top: 10px;">
+                            <button class="btn btn-secondary" onclick="randomizeBoxData()">Randomize</button>
+                        </div>
+                    </div>
+
+                    <div class="controls-grid" style="margin-top: 25px;">
+                        <button class="btn btn-primary" onclick="generateBoxPlot()">Calculate</button>
+                        <button class="btn btn-error" onclick="clearBoxPlot()"
+                            style="background-color: #ffebee; color: #d32f2f;">Clear</button>
+                    </div>
+                </div>
+
+                <!-- Box Plot Output -->
+                <div id="box-output" style="display:none; margin-top:30px;">
+                    <div class="chart-container" style="height: 200px;">
+                        <canvas id="boxChart"></canvas>
+                    </div>
+                    <div id="box-stats" class="results-grid" style="margin-top:20px;"></div>
+                </div>
+            </div>
         </section>
 
     </div>
