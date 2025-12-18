@@ -300,11 +300,10 @@ function drawBoxPlot(data, q1, median, q3, min, max, outliers) {
     ctx.fillStyle = '#333';
 
     // Helper to draw text if space allows (simple check)
-    ctx.font = '11px Inter'; // Smaller font for labels to reduce overlap chances
     const labels = [
-        { val: q1, text: "Q1", y: yCenter - 55 },
-        { val: q3, text: "Q3", y: yCenter - 55 },
-        { val: median, text: "Median", y: yCenter - 85 } // Moved higher to stagger
+        { val: q1, text: "Q1", y: yCenter - 60 },
+        { val: q3, text: "Q3", y: yCenter - 60 },
+        { val: median, text: "Median", y: yCenter - 65 }
     ];
 
     labels.forEach(l => {
