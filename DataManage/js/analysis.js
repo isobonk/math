@@ -84,9 +84,21 @@ function renderScatterChart(xData, yData) {
     ];
 
     // Calculate Correlation for display
-    const r = MathUtils.correlation(xData, yData).toFixed(3);
+    const rVal = MathUtils.correlation(xData, yData);
+    const r = rVal.toFixed(3);
+
+    // Determine Strength and Direction
+    const absR = Math.abs(rVal);
+    let strength = "Weak";
+    if (absR > 0.7) strength = "Strong";
+    else if (absR > 0.3) strength = "Moderate";
+
+    let direction = "No Correlation";
+    if (rVal > 0) direction = "Positive";
+    else if (rVal < 0) direction = "Negative";
+
     document.getElementById('scatter-stats').innerHTML =
-        `<div>Correlation (r): ${r}</div>
+        `<div>Correlation (r): ${r} (${strength} ${direction})</div>
          <div style="margin-top:5px;">Line of Best Fit: y = ${m.toFixed(2)}x + ${b.toFixed(2)}</div>`;
 
     // Render Chart
