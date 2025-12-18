@@ -190,7 +190,7 @@ function displayStats(data, setNum) {
 
     const html = `
         <div class="stat-box">
-            <span class="stat-label">COUNT (N)</span>
+            <span class="stat-label">Number Count</span>
             <span class="stat-value">${data.length}</span>
         </div>
         <div class="stat-box">
