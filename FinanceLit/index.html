@@ -1,0 +1,2129 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Financial Literacy ISU 3</title>
+    <meta
+      name="description"
+      content="Grade 9 Financial Literacy ISU — Budgeting, Rates, Interest, and Appreciation calculators."
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css"
+    />
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"
+      onload="
+        renderMathInElement(document.body, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '\\(', right: '\\)', display: false },
+          ],
+          throwOnError: false,
+        })
+      "
+    ></script>
+    <style>
+      /* ==========================================
+   GLOBAL VARIABLES (Design Tokens)
+   These store our colors and fonts so we can change them easily in one place
+   ========================================== */
+      :root {
+        --bg: #f8fafc; /* Light gray background for the whole page */
+        --surface: #ffffff; /* Pure white for cards and panels */
+        --border: #e2e8f0; /* Subtle gray for borders around cards and inputs */
+        --text: #1e293b; /* Dark slate for main readable text */
+        --text-muted: #64748b; /* Lighter gray for secondary/less important text */
+        --blue: #3b82f6; /* Main brand color for buttons and highlights */
+        --blue-dark: #2563eb; /* Darker blue for when you hover over a button */
+        --font: "Inter", sans-serif;
+      }
+
+      /* Reset default browser margins so our design looks identical everywhere */
+      * {
+        box-sizing: border-box; /* Ensures padding doesn't accidentally increase a box's size */
+        margin: 0;
+        padding: 0;
+      }
+
+      /* Base page setup */
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font);
+        min-height: 100vh; /* Force the body to be at least as tall as the screen */
+        display: flex; /* Use Flexbox for easy layout control */
+        flex-direction: column;
+      }
+
+      /* ==========================================
+   HOME PAGE / WELCOME SCREEN
+   ========================================== */
+      #home-page {
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Center content horizontally */
+        justify-content: center; /* Center content vertically */
+        min-height: 100vh; /* Take up the full screen height */
+        text-align: center;
+        padding: 2rem;
+      }
+
+      .home-title {
+        /* clamp() makes the font dynamically resize based on the screen width */
+        font-size: clamp(2.5rem, 8vw, 5rem);
+        font-weight: 900;
+        letter-spacing: -0.03em;
+        margin-bottom: 1.5rem;
+        max-width: 700px;
+      }
+
+      .home-subtitle {
+        font-size: 1.15rem;
+        color: var(--text-muted);
+        max-width: 480px;
+        margin-bottom: 3rem;
+        line-height: 1.7; /* Adds breathing room between lines of text */
+      }
+
+      /* Styling for the big "Start Exploring" button */
+      .home-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem; /* Space between text and arrow */
+        padding: 1rem 2.2rem;
+        background: var(--blue);
+        color: #fff;
+        border: none;
+        border-radius: 12px; /* Smooth rounded corners */
+        font-family: var(--font);
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s; /* Make hover effects smooth */
+        box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35); /* Soft glowing shadow */
+      }
+
+      .home-btn:hover {
+        background: var(--blue-dark);
+        transform: translateY(
+          -2px
+        ); /* Makes the button "lift up" when hovered */
+        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+      }
+
+      /* ==========================================
+   APP CONTAINER (Holds calculators & tabs)
+   ========================================== */
+      #app {
+        display: none; /* Hidden at first, shown when user clicks "Start Exploring" */
+        flex-direction: column;
+        flex-grow: 1; /* Takes up all available space */
+      }
+
+      /* ==========================================
+   NAVIGATION TOP BAR & TABS
+   ========================================== */
+      .tab-bar {
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        position: sticky; /* Keeps the tab bar visible at the top when scrolling down */
+        top: 0;
+        z-index: 100; /* Ensures the tab bar stays on top of other content */
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+      }
+
+      .tab-bar-inner {
+        max-width: 1200px;
+        margin: 0 auto; /* Centers the tab bar on large screens */
+        display: flex;
+        align-items: stretch; /* Makes tabs stretch to fill the height */
+        height: 54px;
+        padding: 0 1.5rem;
+      }
+
+      .app-name {
+        font-size: 0.9rem;
+        font-weight: 800;
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        padding-right: 1.5rem;
+        margin-right: 1rem;
+        border-right: 1px solid var(--border); /* Small separator line */
+        white-space: nowrap; /* Prevents text from wrapping to a new line */
+        cursor: pointer;
+      }
+
+      .app-name:hover {
+        color: var(--blue);
+      }
+
+      /* Unselected tab buttons */
+      .tab {
+        border: none;
+        background: none;
+        padding: 0 1.1rem;
+        font-family: var(--font);
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        cursor: pointer;
+        border-bottom: 3px solid transparent; /* Invisible border to prevent jumping when active */
+        transition:
+          color 0.2s,
+          border-color 0.2s;
+        height: 100%;
+        white-space: nowrap;
+      }
+
+      .tab:hover {
+        color: var(--text);
+      }
+
+      /* Currently selected tab */
+      .tab.active {
+        color: var(--blue);
+        border-bottom-color: var(
+          --blue
+        ); /* Draws the blue line under the active tab */
+      }
+
+      /* ==========================================
+   MAIN CALCULATOR PANELS
+   ========================================== */
+      .content-area {
+        max-width: 820px;
+        margin: 3rem auto;
+        width: 95%;
+        flex-grow: 1;
+      }
+
+      /* Hide all panels by default */
+      .panel {
+        display: none;
+        animation: fadeUp 0.3s ease-out; /* Slide up nicely when shown */
+      }
+
+      /* Only show the panel with the "active" class */
+      .panel.active {
+        display: block;
+      }
+
+      /* Animation definition for sliding things up */
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ==========================================
+   CARDS (White boxes holding the forms)
+   ========================================== */
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 2.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        margin-bottom: 1.5rem;
+      }
+
+      .card-title {
+        font-size: 1.6rem;
+        font-weight: 800;
+        margin-bottom: 0.4rem;
+      }
+
+      .card-desc {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border);
+      }
+
+      /* ==========================================
+   FORMS & INPUT FIELDS
+   ========================================== */
+      .form-group {
+        margin-bottom: 1.25rem;
+      }
+
+      .form-group label {
+        display: block;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-bottom: 0.4rem;
+      }
+
+      /* Style the text boxes and dropdowns */
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        background: var(--bg);
+        border: 2px solid transparent;
+        border-radius: 10px;
+        color: var(--text);
+        font-family: var(--font);
+        font-size: 1rem;
+        transition: all 0.2s;
+        -webkit-appearance: none; /* Removes default styling on iOS */
+        appearance: none;
+      }
+
+      /* When the user clicks exactly into the input */
+      .form-group input:focus,
+      .form-group select:focus {
+        outline: none;
+        border-color: var(--blue);
+        background: #fff;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); /* Blue focus ring */
+      }
+
+      /* CSS Grid allows us to put two inputs side-by-side easily */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* Two equal columns */
+        gap: 1rem; /* Space between the columns */
+      }
+
+      /* Small divider lines inside a calculator card */
+      .section-divider {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 2rem 0;
+      }
+
+      /* Little subtitles inside a calculator */
+      .section-label {
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: var(--text-muted);
+        margin-bottom: 1.2rem;
+      }
+
+      /* ==========================================
+   BUTTONS (Calculate, Submit)
+   ========================================== */
+      .btn {
+        width: 100%;
+        padding: 0.85rem;
+        border: none;
+        border-radius: 10px;
+        font-family: var(--font);
+        font-size: 0.95rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+        background: var(--blue);
+        color: #fff;
+        box-shadow: 0 4px 10px rgba(59, 130, 246, 0.25);
+      }
+
+      .btn:hover {
+        background: var(--blue-dark);
+        transform: translateY(-1px);
+      }
+
+      .btn:active {
+        transform: scale(
+          0.98
+        ); /* Make it shrink slightly when actively clicked */
+      }
+
+      /* ==========================================
+   RESULTS BOX (Appears after calculating)
+   ========================================== */
+      .result-box {
+        margin-top: 1.75rem;
+        padding: 1.5rem;
+        background: var(--bg);
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        border-left: 5px solid var(--blue); /* Blue stripe on the left */
+        animation: fadeUp 0.3s ease-out; /* Pop up animation */
+      }
+
+      .result-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--text-muted);
+        margin-bottom: 0.25rem;
+      }
+
+      /* The big final number (e.g. $4,000) */
+      .result-value {
+        font-size: 2rem;
+        font-weight: 800;
+        line-height: 1.15;
+        color: var(--blue);
+        margin-bottom: 1.25rem;
+      }
+
+      /* Rows for sub-results (like the "Needs", "Wants" breakdowns) */
+      .result-row {
+        display: flex;
+        justify-content: space-between; /* Pushes label to left, money to right */
+        align-items: center;
+        padding: 0.5rem 0;
+        font-size: 0.93rem;
+      }
+
+      /* Adds a dashed line between rows, but not above the first one */
+      .result-row + .result-row {
+        border-top: 1px dashed var(--border);
+      }
+
+      .result-row strong {
+        font-weight: 700;
+      }
+
+      /* ==========================================
+   MATH STEPS BOX (Shows the work)
+   ========================================== */
+      .math-section {
+        margin-top: 1.25rem;
+        padding-top: 1.25rem;
+        border-top: 1px solid var(--border);
+      }
+
+      .math-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--text-muted);
+        margin-bottom: 0.75rem;
+      }
+
+      /* Code-style font for math steps */
+      .math-steps {
+        font-family: "Courier New", monospace;
+        font-size: 0.85rem;
+        line-height: 1.9;
+        color: var(--text);
+        background: #f1f5f9;
+        padding: 1rem 1.25rem;
+        border-radius: 8px;
+        white-space: pre-wrap; /* Keeps newlines and spaces exactly as written in the JS */
+      }
+
+      /* ==========================================
+   STUDY & QUIZ ACTION BUTTONS
+   ========================================== */
+      .action-tabs {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 1.5rem;
+      }
+
+      .action-tab-btn {
+        flex: 1; /* Makes both buttons equal width */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.85rem 1rem;
+        border: 2px solid var(--blue); /* Outline button initially */
+        border-radius: 12px;
+        background: #fff;
+        color: var(--blue);
+        font-family: var(--font);
+        font-size: 0.9rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .action-tab-btn:hover {
+        background: var(--blue); /* Fill it in on hover */
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+      }
+
+      /* ==========================================
+   FULL SCREEN OVERLAYS (For Study/Quiz Areas)
+   ========================================== */
+      .overlay-page {
+        display: none;
+        flex-direction: column;
+        flex-grow: 1;
+        animation: fadeUp 0.25s ease-out;
+      }
+
+      .overlay-page.active {
+        display: flex;
+      }
+
+      .overlay-content {
+        max-width: 820px;
+        margin: 2.5rem auto;
+        width: 95%;
+        flex-grow: 1;
+      }
+
+      /* The '<- Back to Budgeting' button */
+      .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.6rem 1.2rem;
+        background: var(--bg);
+        border: 2px solid var(--border);
+        border-radius: 10px;
+        font-family: var(--font);
+        font-size: 0.875rem;
+        font-weight: 700;
+        cursor: pointer;
+        color: var(--text);
+        transition: all 0.2s;
+        margin-bottom: 1.75rem;
+      }
+
+      .back-btn:hover {
+        border-color: var(--blue);
+        color: var(--blue);
+      }
+
+      /* ==========================================
+   STUDY CARDS & CONTENT
+   ========================================== */
+      .study-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 2.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+
+      .study-card-title {
+        font-size: 1.4rem;
+        font-weight: 800;
+        margin-bottom: 0.3rem;
+      }
+
+      .study-card-desc {
+        color: var(--text-muted);
+        font-size: 0.875rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .concept-list {
+        list-style: none; /* Removes default bullet points */
+        padding: 0;
+        margin-bottom: 1rem;
+      }
+
+      .concept-list li {
+        padding: 0.9rem 1rem;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        margin-bottom: 0.6rem;
+        font-size: 0.92rem;
+        line-height: 1.6;
+        background: var(--bg);
+      }
+
+      /* Blue titles inside the study points */
+      .concept-list li strong {
+        display: block;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--blue);
+        margin-bottom: 0.2rem;
+      }
+
+      /* Custom styling for KaTeX math formulas in the study notes */
+      .katex-formula {
+        display: block;
+        margin-top: 0.6rem;
+        padding: 0.5rem 0.75rem;
+        background: #eff6ff; /* Very soft blue */
+        border-radius: 8px;
+        border-left: 3px solid var(--blue);
+        overflow-x: auto; /* Allows formulas that are too long to be scrolled left/right */
+      }
+
+      /* ==========================================
+   QUIZ COMPONENT
+   ========================================== */
+      .quiz-question {
+        margin-bottom: 2rem;
+      }
+
+      .quiz-q-label {
+        font-size: 0.93rem;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 0.7rem;
+        line-height: 1.55;
+      }
+
+      /* Holds all the A/B/C options */
+      .quiz-options {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      /* Individual answer choice box */
+      .quiz-option {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        border: 2px solid var(--border);
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.15s;
+        font-size: 0.9rem;
+        background: var(--bg);
+        user-select: none; /* Prevents text highlighting when clicking */
+      }
+
+      .quiz-option:hover {
+        border-color: var(--blue);
+        background: #eff6ff;
+      }
+
+      /* Make the radio button inside blue */
+      .quiz-option input {
+        accent-color: var(--blue);
+        width: 16px;
+        height: 16px;
+      }
+
+      /* ==========================================
+   QUIZ RESULTS
+   ========================================== */
+      .quiz-result-item {
+        padding: 0.6rem 1rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+      }
+
+      /* Green box for correct answers */
+      .quiz-result-item.correct {
+        background: #ecfdf5;
+        border: 1px solid #6ee7b7;
+        color: #065f46;
+      }
+
+      /* Red box for incorrect answers */
+      .quiz-result-item.wrong {
+        background: #fef2f2;
+        border: 1px solid #fca5a5;
+        color: #991b1b;
+      }
+
+      /* ==========================================
+   UTILITY CLASSES
+   ========================================== */
+      .hidden {
+        display: none !important; /* Force hide anything with this class immediately */
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ===== HOME ===== -->
+    <section id="home-page">
+      <h1 class="home-title">Financial Literacy ISU 3</h1>
+      <p class="home-subtitle">
+        Explore budgeting, interest, rates, and appreciation &amp; depreciation
+        with interactive calculators that show you the math step-by-step.
+      </p>
+      <button class="home-btn" onclick="enterApp()">
+        Start Exploring &rarr;
+      </button>
+    </section>
+
+    <!-- ===== APP SHELL ===== -->
+    <div id="app">
+      <!-- TAB BAR (always visible inside app) -->
+      <nav class="tab-bar">
+        <div class="tab-bar-inner">
+          <span class="app-name" onclick="goHome()"
+            >Financial Literacy ISU 3</span
+          >
+          <button
+            class="tab active"
+            id="tab-budget"
+            onclick="switchTab('budget', this)"
+          >
+            Budgeting
+          </button>
+          <button class="tab" id="tab-rates" onclick="switchTab('rates', this)">
+            Rates &amp; Percentages
+          </button>
+          <button
+            class="tab"
+            id="tab-assets"
+            onclick="switchTab('assets', this)"
+          >
+            Appreciation &amp; Depreciation
+          </button>
+          <button
+            class="tab"
+            id="tab-interest"
+            onclick="switchTab('interest', this)"
+          >
+            Interest
+          </button>
+        </div>
+      </nav>
+
+      <!-- ========== CALCULATOR PANELS ========== -->
+      <div id="panels-container">
+        <!-- BUDGETING -->
+        <div class="content-area">
+          <div id="panel-budget" class="panel active">
+            <div class="card">
+              <h2 class="card-title">Budgeting Planner</h2>
+              <p class="card-desc">
+                Use the 50/30/20 rule to divide your net income into Needs,
+                Wants, and Savings.
+              </p>
+              <form id="budgetForm">
+                <div class="form-group">
+                  <label for="grossIncome">Gross Annual Income ($)</label
+                  ><input
+                    type="number"
+                    id="grossIncome"
+                    min="1"
+                    step="0.01"
+                    required
+                    placeholder="e.g. 65,000"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="netIncome">Net Annual Income ($)</label
+                  ><input
+                    type="number"
+                    id="netIncome"
+                    min="1"
+                    step="0.01"
+                    required
+                    placeholder="e.g. 45,500"
+                  />
+                </div>
+                <button type="submit" class="btn">Calculate Breakdown</button>
+              </form>
+              <div id="budgetResult" class="result-box hidden"></div>
+              <div id="budgetActions" class="action-tabs">
+                <button
+                  class="action-tab-btn"
+                  onclick="openOverlay('study', 'budget')"
+                >
+                  Study Notes
+                </button>
+                <button
+                  class="action-tab-btn"
+                  onclick="openOverlay('quiz', 'budget')"
+                >
+                  Test Your Knowledge
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- RATES -->
+          <div id="panel-rates" class="panel">
+            <div class="card">
+              <h2 class="card-title">Rates &amp; Percentages</h2>
+              <p class="card-desc">
+                Calculate percentage change and find the best unit rate.
+              </p>
+              <p class="section-label">Percentage Change</p>
+              <form id="pctForm">
+                <div class="grid-2">
+                  <div class="form-group">
+                    <label for="baseValue">Original Value ($)</label
+                    ><input
+                      type="number"
+                      id="baseValue"
+                      min="0"
+                      step="0.01"
+                      required
+                      placeholder="100"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="newValue">New Value ($)</label
+                    ><input
+                      type="number"
+                      id="newValue"
+                      min="0"
+                      step="0.01"
+                      required
+                      placeholder="120"
+                    />
+                  </div>
+                </div>
+                <button type="submit" class="btn">Calculate % Change</button>
+              </form>
+              <hr class="section-divider" />
+              <p class="section-label">Unit Rate</p>
+              <div class="grid-2">
+                <div class="form-group">
+                  <label for="unitCost">Total Cost ($)</label
+                  ><input
+                    type="number"
+                    id="unitCost"
+                    min="0"
+                    step="0.01"
+                    placeholder="10.00"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="unitQty">Quantity</label
+                  ><input
+                    type="number"
+                    id="unitQty"
+                    min="0.01"
+                    step="0.01"
+                    placeholder="4"
+                  />
+                </div>
+              </div>
+              <button id="unitRateBtn" class="btn">Calculate Unit Rate</button>
+              <div id="ratesResult" class="result-box hidden"></div>
+              <div id="ratesActions" class="action-tabs">
+                <button
+                  class="action-tab-btn"
+                  onclick="openOverlay('study', 'rates')"
+                >
+                  Study Notes
+                </button>
+                <button
+                  class="action-tab-btn"
+                  onclick="openOverlay('quiz', 'rates')"
+                >
+                  Test Your Knowledge
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ASSETS -->
+          <div id="panel-assets" class="panel">
+            <div class="card">
+              <h2 class="card-title">Appreciation &amp; Depreciation</h2>
+              <p class="card-desc">
+                Project an asset's future value using the exponential growth or
+                decay formula: FV = PV &times; (1 &plusmn; r)<sup>t</sup>
+              </p>
+              <form id="assetForm">
+                <div class="form-group">
+                  <label for="assetInitial">Initial Value ($)</label
+                  ><input
+                    type="number"
+                    id="assetInitial"
+                    min="0"
+                    step="0.01"
+                    required
+                    placeholder="e.g. 25,000"
+                  />
+                </div>
+                <div class="grid-2">
+                  <div class="form-group">
+                    <label for="assetRate">Annual Rate (%)</label
+                    ><input
+                      type="number"
+                      id="assetRate"
+                      min="0"
+                      step="0.01"
+                      required
+                      placeholder="e.g. 5"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="assetYears">Time (Years)</label
+                    ><input
+                      type="number"
+                      id="assetYears"
+                      min="0"
+                      step="0.5"
+                      required
+                      placeholder="e.g. 10"
+                    />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="assetType">Type</label>
+                  <select id="assetType">
+                    <option value="appreciation">
+                      Appreciation (value increases)
+                    </option>
+                    <option value="depreciation">
+                      Depreciation (value decreases)
+                    </option>
+                  </select>
+                </div>
+                <button type="submit" class="btn">Project Future Value</button>
+              </form>
+              <div id="assetResult" class="result-box hidden"></div>
+              <div id="assetsActions" class="action-tabs">
+                <button
+                  class="action-tab-btn"
+                  onclick="openOverlay('study', 'assets')"
+                >
+                  Study Notes
+                </button>
+                <button
+                  class="action-tab-btn"
+                  onclick="openOverlay('quiz', 'assets')"
+                >
+                  Test Your Knowledge
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- INTEREST -->
+          <div id="panel-interest" class="panel">
+            <div class="card">
+              <h2 class="card-title">Interest &amp; Borrowing</h2>
+              <p class="card-desc">
+                Compare simple and compound interest to understand how money
+                grows or debt accumulates.
+              </p>
+              <form id="interestForm">
+                <div class="form-group">
+                  <label for="principal">Principal ($)</label
+                  ><input
+                    type="number"
+                    id="principal"
+                    min="0"
+                    step="0.01"
+                    required
+                    placeholder="e.g. 5,000"
+                  />
+                </div>
+                <div class="grid-2">
+                  <div class="form-group">
+                    <label for="intRate">Annual Rate (%)</label
+                    ><input
+                      type="number"
+                      id="intRate"
+                      min="0"
+                      step="0.01"
+                      required
+                      placeholder="e.g. 4.5"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="intYears">Time (Years)</label
+                    ><input
+                      type="number"
+                      id="intYears"
+                      min="1"
+                      step="0.5"
+                      required
+                      placeholder="e.g. 5"
+                    />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="compType">Interest Type</label>
+                  <select id="compType">
+                    <option value="simple">Simple Interest</option>
+                    <option value="1">Compound Annually</option>
+                    <option value="12">Compound Monthly</option>
+                    <option value="365">Compound Daily</option>
+                  </select>
+                </div>
+                <button type="submit" class="btn">Calculate Interest</button>
+              </form>
+              <div id="interestResult" class="result-box hidden"></div>
+              <div id="interestActions" class="action-tabs">
+                <button
+                  class="action-tab-btn"
+                  onclick="openOverlay('study', 'interest')"
+                >
+                  Study Notes
+                </button>
+                <button
+                  class="action-tab-btn"
+                  onclick="openOverlay('quiz', 'interest')"
+                >
+                  Test Your Knowledge
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /panels-container -->
+      </div>
+      <!-- /content-area -->
+
+      <!-- ========== OVERLAY: STUDY NOTES ========== -->
+      <div id="overlay-study" class="overlay-page">
+        <div class="overlay-content">
+          <button
+            class="back-btn"
+            id="study-back-btn"
+            onclick="closeOverlay('study')"
+          >
+            &#8592; Back to <span id="study-back-label"></span>
+          </button>
+          <div class="study-card">
+            <!-- BUDGET STUDY -->
+            <div id="study-budget" class="hidden">
+              <h3 class="study-card-title">Study Notes &mdash; Budgeting</h3>
+              <p class="study-card-desc">
+                Key concepts for understanding budgeting and personal finance.
+              </p>
+              <p class="section-label">Key Concepts</p>
+              <ul class="concept-list">
+                <li>
+                  <strong>Gross Income vs. Net Income</strong>Gross income is
+                  your total pay before any deductions. Net income is what you
+                  actually take home after taxes, CPP contributions, and
+                  Employment Insurance (EI) are deducted. Budgeting should
+                  always be based on net income, not gross.
+                </li>
+                <li>
+                  <strong>The 50/30/20 Rule</strong>A widely used budgeting
+                  guideline: allocate <b>50%</b> of net income to
+                  <em>Needs</em> (rent, groceries, utilities), <b>30%</b> to
+                  <em>Wants</em> (dining out, entertainment, subscriptions), and
+                  <b>20%</b> to <em>Savings or Debt Repayment</em>.
+                  <div class="katex-formula">
+                    \(\text{Needs} = \frac{\text{Net}}{12} \times 0.50 \qquad
+                    \text{Wants} = \frac{\text{Net}}{12} \times 0.30 \qquad
+                    \text{Savings} = \frac{\text{Net}}{12} \times 0.20\)
+                  </div>
+                </li>
+                <li>
+                  <strong>Fixed vs. Variable Expenses</strong>Fixed expenses
+                  stay the same each month (rent, car payment, insurance).
+                  Variable expenses change month to month (groceries, gas,
+                  entertainment). Budgeting both is important because variable
+                  expenses are easy to overspend on.
+                </li>
+                <li>
+                  <strong>Why Start with Monthly Budgeting?</strong>Annual
+                  income is converted to monthly because most bills (rent,
+                  phone, utilities) are billed monthly. Dividing your annual net
+                  income by 12 gives your monthly spending baseline.
+                </li>
+                <li>
+                  <strong>Emergency Fund</strong>Financial experts recommend
+                  saving 3–6 months of living expenses in an emergency fund
+                  before investing. This is funded from the savings portion
+                  (20%) of your budget.
+                </li>
+                <li>
+                  <strong>Deductions from Gross Pay (Canadian Context)</strong
+                  >In Canada, deductions include federal and provincial income
+                  tax (varies by bracket), Canada Pension Plan (CPP)
+                  contributions (5.70% of insurable earnings in 2024), and
+                  Employment Insurance (EI) premiums.
+                </li>
+              </ul>
+            </div>
+
+            <!-- RATES STUDY -->
+            <div id="study-rates" class="hidden">
+              <h3 class="study-card-title">
+                Study Notes &mdash; Rates &amp; Percentages
+              </h3>
+              <p class="study-card-desc">
+                Key concepts for calculating percentage change and unit rates.
+              </p>
+              <p class="section-label">Key Concepts</p>
+              <ul class="concept-list">
+                <li>
+                  <strong>Percentage Change</strong>Measures how much a quantity
+                  has increased or decreased relative to its original value,
+                  expressed as a percentage. A positive result = increase;
+                  negative = decrease.
+                  <div class="katex-formula">
+                    \(\% \text{ Change} = \dfrac{\text{New} -
+                    \text{Old}}{\text{Old}} \times 100\)
+                  </div>
+                </li>
+                <li>
+                  <strong>Percent Increase vs. Percent Decrease</strong>If the
+                  new value is greater than the original, the result is a
+                  <em>percent increase</em>. If the new value is smaller, it is
+                  a <em>percent decrease</em>. Both use the same formula — the
+                  sign of the result tells you which it is.
+                </li>
+                <li>
+                  <strong>Unit Rate</strong>A ratio that compares a quantity to
+                  exactly 1 unit. Used to determine the cost per item, speed, or
+                  any per-unit comparison. Essential for comparing value between
+                  differently sized products.
+                  <div class="katex-formula">
+                    \(\text{Unit Rate} = \dfrac{\text{Total
+                    Cost}}{\text{Quantity}}\)
+                  </div>
+                </li>
+                <li>
+                  <strong>Best Buy Comparison</strong>To determine which product
+                  offers better value, calculate the unit rate for each and
+                  compare. The lower unit rate is the better value — this works
+                  regardless of package size or price difference.
+                </li>
+                <li>
+                  <strong>Markup and Discount</strong>A
+                  <em>markup</em> increases the original price by a percentage.
+                  A <em>discount</em> reduces the price. Both are calculated
+                  using percentage change.
+                  <div class="katex-formula">
+                    \(\text{Sale Price} = P \times (1 - d) \qquad \text{Marked
+                    Up Price} = P \times (1 + m)\)
+                  </div>
+                </li>
+                <li>
+                  <strong>Rate vs. Ratio</strong>A <em>ratio</em> compares two
+                  quantities of the same unit (e.g., 3:5). A
+                  <em>rate</em> compares two quantities of different units
+                  (e.g., 80 km/h, $2.50/L).
+                </li>
+              </ul>
+            </div>
+
+            <!-- ASSETS STUDY -->
+            <div id="study-assets" class="hidden">
+              <h3 class="study-card-title">
+                Study Notes &mdash; Appreciation &amp; Depreciation
+              </h3>
+              <p class="study-card-desc">
+                Key concepts for understanding how assets change in value over
+                time.
+              </p>
+              <p class="section-label">Key Concepts</p>
+              <ul class="concept-list">
+                <li>
+                  <strong>Appreciation</strong>When an asset increases in value
+                  over time, it is said to <em>appreciate</em>. Common examples
+                  include real estate, land, stocks, and collectibles.
+                  <div class="katex-formula">
+                    \(FV = PV \times (1 + r)^{t}\)
+                  </div>
+                </li>
+                <li>
+                  <strong>Depreciation</strong>When an asset decreases in value
+                  over time, it <em>depreciates</em>. This is common with
+                  vehicles, electronics, and machinery.
+                  <div class="katex-formula">
+                    \(FV = PV \times (1 - r)^{t}\)
+                  </div>
+                </li>
+                <li>
+                  <strong>Why Exponential, Not Linear?</strong>Depreciation and
+                  appreciation apply the rate to the current value each year —
+                  not the original. A car depreciating at 15%/year loses more
+                  money in year 1 than in year 5 because the base value is
+                  smaller.
+                </li>
+                <li>
+                  <strong>Variables Explained</strong>PV = Present Value
+                  (starting value), FV = Future Value, r = annual rate as a
+                  decimal (e.g., 8% → 0.08), t = time in years. The exponent t
+                  makes this compound change rather than simple.
+                </li>
+                <li>
+                  <strong>Common Appreciation Assets</strong>Real estate in
+                  growing cities (avg. 3–7%/year), stocks and ETFs (avg.
+                  7–10%/year historically), precious metals (gold, silver), and
+                  collectibles.
+                </li>
+                <li>
+                  <strong>Common Depreciation Assets</strong>New cars lose
+                  roughly 15–20% in year 1 alone and can lose 50–60% in the
+                  first 5 years. Electronics, appliances, and furniture also
+                  depreciate quickly.
+                </li>
+              </ul>
+            </div>
+
+            <!-- INTEREST STUDY -->
+            <div id="study-interest" class="hidden">
+              <h3 class="study-card-title">
+                Study Notes &mdash; Interest &amp; Borrowing
+              </h3>
+              <p class="study-card-desc">
+                Key concepts for understanding how interest works in savings and
+                debt.
+              </p>
+              <p class="section-label">Key Concepts</p>
+              <ul class="concept-list">
+                <li>
+                  <strong>Simple Interest</strong>Interest calculated only on
+                  the original principal — it does not compound. Results in
+                  linear growth. Used in some short-term loans, bonds, and GICs.
+                  <div class="katex-formula">
+                    \(I = P \times r \times t \qquad \text{Total} = P + I\)
+                  </div>
+                </li>
+                <li>
+                  <strong>Compound Interest</strong>Interest is calculated on
+                  the principal AND on previously earned interest. This causes
+                  exponential growth and is used by most banks, credit cards,
+                  mortgages, and investment accounts.
+                  <div class="katex-formula">
+                    \(A = P \times \left(1 + \dfrac{r}{n}\right)^{n \cdot t}\)
+                  </div>
+                </li>
+                <li>
+                  <strong>Compounding Frequency (n)</strong>How often interest
+                  is added to the principal. More frequent compounding = higher
+                  effective return or cost. Annual (n=1), Monthly (n=12), and
+                  Daily (n=365) are the most common.
+                </li>
+                <li>
+                  <strong>The Rule of 72</strong>A quick shortcut: divide 72 by
+                  the annual interest rate to estimate how many years it takes
+                  to double your money.
+                  <div class="katex-formula">
+                    \(\text{Years to Double} \approx \dfrac{72}{r}\)
+                  </div>
+                </li>
+                <li>
+                  <strong>Principal (P)</strong>The original amount of money
+                  invested or borrowed. Making extra payments on principal
+                  reduces the total interest paid dramatically.
+                </li>
+                <li>
+                  <strong>Interest in Debt vs. Savings</strong>Compound interest
+                  <em>works for you</em> in savings. But it
+                  <em>works against you</em> in debt — credit card balances can
+                  double fast because unpaid interest is added to the balance.
+                </li>
+              </ul>
+            </div>
+          </div>
+          <!-- /study-card -->
+        </div>
+        <!-- /overlay-content -->
+      </div>
+      <!-- /overlay-study -->
+
+      <!-- ========== OVERLAY: QUIZ ========== -->
+      <div id="overlay-quiz" class="overlay-page">
+        <div class="overlay-content">
+          <button
+            class="back-btn"
+            id="quiz-back-btn"
+            onclick="closeOverlay('quiz')"
+          >
+            &#8592; Back to <span id="quiz-back-label"></span>
+          </button>
+          <div class="study-card">
+            <!-- BUDGET QUIZ -->
+            <div id="quiz-budget" class="hidden">
+              <h3 class="study-card-title">
+                Test Your Knowledge &mdash; Budgeting
+              </h3>
+              <p class="study-card-desc">
+                Answer the questions below. Your results and explanations will
+                appear after you submit.
+              </p>
+              <form
+                id="quizBudget"
+                onsubmit="
+                  submitQuiz(
+                    event,
+                    'quizBudget',
+                    'quizBudgetResult',
+                    { bq1: 'b', bq2: 'b', bq3: 'b' },
+                    {
+                      bq1: '$48,000 ÷ 12 = $4,000/month. 20% of $4,000 = $800.',
+                      bq2: 'Rent is fixed — it stays the same each month.',
+                      bq3: '$44,000 ÷ 12 = $3,667/month. 30% of $3,667 ≈ $1,100.',
+                    },
+                  )
+                "
+              >
+                <div class="quiz-question">
+                  <div class="quiz-q-label">
+                    1. Your net annual income is $48,000. Using the 50/30/20
+                    rule, what should your monthly savings be?
+                  </div>
+                  <div class="quiz-options">
+                    <label class="quiz-option"
+                      ><input type="radio" name="bq1" value="a" />
+                      $400/month</label
+                    ><label class="quiz-option"
+                      ><input type="radio" name="bq1" value="b" />
+                      $800/month</label
+                    ><label class="quiz-option"
+                      ><input type="radio" name="bq1" value="c" />
+                      $1,200/month</label
+                    >
+                  </div>
+                </div>
+                <div class="quiz-question">
+                  <div class="quiz-q-label">
+                    2. Which type of expense is your monthly rent?
+                  </div>
+                  <div class="quiz-options">
+                    <label class="quiz-option"
+                      ><input type="radio" name="bq2" value="a" /> Variable
+                      expense</label
+                    ><label class="quiz-option"
+                      ><input type="radio" name="bq2" value="b" /> Fixed
+                      expense</label
+                    ><label class="quiz-option"
+                      ><input type="radio" name="bq2" value="c" /> Discretionary
+                      expense</label
+                    >
+                  </div>
+                </div>
+                <div class="quiz-question">
+                  <div class="quiz-q-label">
+                    3. A person earns $60,000 gross/year and takes home $44,000.
+                    What should their monthly "Wants" budget be?
+                  </div>
+                  <div class="quiz-options">
+                    <label class="quiz-option"
+                      ><input type="radio" name="bq3" value="a" />
+                      $1,500/month</label
+                    ><label class="quiz-option"
+                      ><input type="radio" name="bq3" value="b" />
+                      $1,100/month</label
+                    ><label class="quiz-option"
+                      ><input type="radio" name="bq3" value="c" />
+                      $2,500/month</label
+                    >
+                  </div>
+                </div>
+                <button type="submit" class="btn">Submit</button>
+              </form>
+              <div
+                id="quizBudgetResult"
+                class="hidden"
+                style="margin-top: 1.5rem"
+              ></div>
+            </div>
+
+            <!-- RATES QUIZ -->
+            <div id="quiz-rates" class="hidden">
+              <h3 class="study-card-title">
+                Test Your Knowledge &mdash; Rates &amp; Percentages
+              </h3>
+              <p class="study-card-desc">
+                Answer the questions below. Your results and explanations will
+                appear after you submit.
+              </p>
+              <form
+                id="quizRates"
+                onsubmit="
+                  submitQuiz(
+                    event,
+                    'quizRates',
+                    'quizRatesResult',
+                    { rq1: 'a', rq2: 'b', rq3: 'b' },
+                    {
+                      rq1: '(60 − 80) ÷ 80 × 100 = −25%. The price decreased by 25%.',
+                      rq2: 'Brand A: $3.50÷500g = $0.007/g. Brand B: $4.95÷750g ≈ $0.0066/g. Brand B is cheaper per gram.',
+                      rq3: '$24 ÷ 8 units = $3.00 per unit.',
+                    },
+                  )
+                "
+              >
+                <div class="quiz-question">
+                  <div class="quiz-q-label">
+                    1. A jacket was originally $80 and is now on sale for $60.
+                    What is the percentage change?
+                  </div>
+                  <div class="quiz-options">
+                    <label class="quiz-option"
+                      ><input type="radio" name="rq1" value="a" /> −25%</label
+                    ><label class="quiz-option"
+                      ><input type="radio" name="rq1" value="b" /> −33%</label
+                    ><label class="quiz-option"
+                      ><input type="radio" name="rq1" value="c" /> +25%</label
+                    >
+                  </div>
+                </div>
+                <div class="quiz-question">
+                  <div class="quiz-q-label">
+                    2. Brand A: 500g for $3.50. Brand B: 750g for $4.95. Which
+                    is the better value?
+                  </div>
+                  <div class="quiz-options">
+                    <label class="quiz-option"
+                      ><input type="radio" name="rq2" value="a" /> Brand A
+                      ($0.70/100g)</label
+                    ><label class="quiz-option"
+                      ><input type="radio" name="rq2" value="b" /> Brand B
+                      ($0.66/100g)</label
+                    ><label class="quiz-option"
+                      ><input type="radio" name="rq2" value="c" /> They are the
+                      same value</label
+                    >
+                  </div>
+                </div>
+                <div class="quiz-question">
+                  <div class="quiz-q-label">
+                    3. A product costs $24 for 8 units. What is the unit rate?
+                  </div>
+                  <div class="quiz-options">
+                    <label class="quiz-option"
+                      ><input type="radio" name="rq3" value="a" />
+                      $4.00/unit</label
+                    ><label class="quiz-option"
+                      ><input type="radio" name="rq3" value="b" />
+                      $3.00/unit</label
+                    ><label class="quiz-option"
+                      ><input type="radio" name="rq3" value="c" />
+                      $2.00/unit</label
+                    >
+                  </div>
+                </div>
+                <button type="submit" class="btn">Submit</button>
+              </form>
+              <div
+                id="quizRatesResult"
+                class="hidden"
+                style="margin-top: 1.5rem"
+              ></div>
+            </div>
+
+            <!-- ASSETS QUIZ -->
+            <div id="quiz-assets" class="hidden">
+              <h3 class="study-card-title">
+                Test Your Knowledge &mdash; Appreciation &amp; Depreciation
+              </h3>
+              <p class="study-card-desc">
+                Answer the questions below. Your results and explanations will
+                appear after you submit.
+              </p>
+              <form
+                id="quizAssets"
+                onsubmit="
+                  submitQuiz(
+                    event,
+                    'quizAssets',
+                    'quizAssetsResult',
+                    { aq1: 'b', aq2: 'b', aq3: 'b' },
+                    {
+                      aq1: '$350,000 × (1.04)^3 = $350,000 × 1.1249 ≈ $393,671.',
+                      aq2: '$30,000 × (0.82)^2 = $30,000 × 0.6724 ≈ $20,172.',
+                      aq3: 'Depreciation is a percentage of the current value. Since the value decreases each year, the percentage applies to a smaller base.',
+                    },
+                  )
+                "
+              >
+                <div class="quiz-question">
+                  <div class="quiz-q-label">
+                    1. A house purchased for $350,000 appreciates at 4% per
+                    year. What is it worth after 3 years?
+                  </div>
+                  <div class="quiz-options">
+                    <label class="quiz-option"
+                      ><input type="radio" name="aq1" value="a" />
+                      $392,000</label
+                    ><label class="quiz-option"
+                      ><input type="radio" name="aq1" value="b" />
+                      $393,671</label
+                    ><label class="quiz-option"
+                      ><input type="radio" name="aq1" value="c" />
+                      $404,000</label
+                    >
+                  </div>
+                </div>
+                <div class="quiz-question">
+                  <div class="quiz-q-label">
+                    2. A $30,000 car depreciates at 18% per year. Approximately
+                    what is it worth after 2 years?
+                  </div>
+                  <div class="quiz-options">
+                    <label class="quiz-option"
+                      ><input type="radio" name="aq2" value="a" />
+                      $19,800</label
+                    ><label class="quiz-option"
+                      ><input type="radio" name="aq2" value="b" />
+                      $20,172</label
+                    ><label class="quiz-option"
+                      ><input type="radio" name="aq2" value="c" />
+                      $21,600</label
+                    >
+                  </div>
+                </div>
+                <div class="quiz-question">
+                  <div class="quiz-q-label">
+                    3. Why does an asset lose more money in dollar terms in year
+                    1 than in later years, with the same depreciation rate?
+                  </div>
+                  <div class="quiz-options">
+                    <label class="quiz-option"
+                      ><input type="radio" name="aq3" value="a" /> The rate
+                      decreases each year</label
+                    ><label class="quiz-option"
+                      ><input type="radio" name="aq3" value="b" /> The
+                      depreciation applies to a smaller value each year</label
+                    ><label class="quiz-option"
+                      ><input type="radio" name="aq3" value="c" /> Banks charge
+                      more in year 1</label
+                    >
+                  </div>
+                </div>
+                <button type="submit" class="btn">Submit</button>
+              </form>
+              <div
+                id="quizAssetsResult"
+                class="hidden"
+                style="margin-top: 1.5rem"
+              ></div>
+            </div>
+
+            <!-- INTEREST QUIZ -->
+            <div id="quiz-interest" class="hidden">
+              <h3 class="study-card-title">
+                Test Your Knowledge &mdash; Interest &amp; Borrowing
+              </h3>
+              <p class="study-card-desc">
+                Answer the questions below. Your results and explanations will
+                appear after you submit.
+              </p>
+              <form
+                id="quizInterest"
+                onsubmit="
+                  submitQuiz(
+                    event,
+                    'quizInterest',
+                    'quizInterestResult',
+                    { iq1: 'a', iq2: 'b', iq3: 'b' },
+                    {
+                      iq1: 'I = $2,000 × 0.05 × 4 = $400. Total = $2,000 + $400 = $2,400.',
+                      iq2: '72 ÷ 6 = 12 years.',
+                      iq3: 'Compound interest earns interest on interest. Simple interest only earns on the original principal.',
+                    },
+                  )
+                "
+              >
+                <div class="quiz-question">
+                  <div class="quiz-q-label">
+                    1. $2,000 is invested at 5% simple interest for 4 years.
+                    What is the total amount after 4 years?
+                  </div>
+                  <div class="quiz-options">
+                    <label class="quiz-option"
+                      ><input type="radio" name="iq1" value="a" /> $2,400</label
+                    ><label class="quiz-option"
+                      ><input type="radio" name="iq1" value="b" /> $2,431</label
+                    ><label class="quiz-option"
+                      ><input type="radio" name="iq1" value="c" /> $2,200</label
+                    >
+                  </div>
+                </div>
+                <div class="quiz-question">
+                  <div class="quiz-q-label">
+                    2. You invest $1,000 at 6% compounded annually. Using the
+                    Rule of 72, approximately when does it double?
+                  </div>
+                  <div class="quiz-options">
+                    <label class="quiz-option"
+                      ><input type="radio" name="iq2" value="a" /> 10
+                      years</label
+                    ><label class="quiz-option"
+                      ><input type="radio" name="iq2" value="b" /> 12
+                      years</label
+                    ><label class="quiz-option"
+                      ><input type="radio" name="iq2" value="c" /> 18
+                      years</label
+                    >
+                  </div>
+                </div>
+                <div class="quiz-question">
+                  <div class="quiz-q-label">
+                    3. Which results in more interest earned after 10 years: 5%
+                    simple interest or 5% compound interest (annual)?
+                  </div>
+                  <div class="quiz-options">
+                    <label class="quiz-option"
+                      ><input type="radio" name="iq3" value="a" /> Simple
+                      interest — it has a higher rate</label
+                    ><label class="quiz-option"
+                      ><input type="radio" name="iq3" value="b" /> Compound
+                      interest — interest earns interest</label
+                    ><label class="quiz-option"
+                      ><input type="radio" name="iq3" value="c" /> They are
+                      always equal</label
+                    >
+                  </div>
+                </div>
+                <button type="submit" class="btn">Submit</button>
+              </form>
+              <div
+                id="quizInterestResult"
+                class="hidden"
+                style="margin-top: 1.5rem"
+              ></div>
+            </div>
+          </div>
+          <!-- /study-card -->
+        </div>
+        <!-- /overlay-content -->
+      </div>
+      <!-- /overlay-quiz -->
+    </div>
+    <!-- /app -->
+
+    <script>
+      // ==========================================
+      // 1. HELPER FUNCTIONS
+      // ==========================================
+
+      // This function takes a raw number (like 1234.5) and formats it as Canadian money ($1,234.50)
+      function formatCurrency(value) {
+        return (
+          "$" +
+          value.toLocaleString("en-CA", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })
+        );
+      }
+
+      // This function formats a number with commas and exactly 2 decimal places (like 1,234.50), but without the dollar sign
+      function formatNumber(value) {
+        return value.toLocaleString("en-CA", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+      }
+
+      // ==========================================
+      // 2. NAVIGATION (Moving between pages)
+      // ==========================================
+
+      // Hides the welcome screen and shows the main calculators
+      function enterApp() {
+        document.getElementById("home-page").style.display = "none";
+        document.getElementById("app").style.display = "flex";
+      }
+
+      // Hides the calculators and returns to the welcome screen
+      function goHome() {
+        closeAllOverlays(); // Make sure no study notes or quizzes are open
+        document.getElementById("app").style.display = "none";
+        document.getElementById("home-page").style.display = "flex";
+      }
+
+      // ==========================================
+      // 3. TAB MANAGEMENT
+      // ==========================================
+
+      // We use this variable to remember which calculator the user is currently looking at
+      let currentTab = "budget";
+
+      // This function switches between the four main calculators
+      function switchTab(tabId, tabElement) {
+        closeAllOverlays(); // Close any open study notes/quizzes before switching
+
+        // 1. Hide all calculator panels
+        const allPanels = document.querySelectorAll(".panel");
+        allPanels.forEach(function (panel) {
+          panel.classList.remove("active");
+        });
+
+        // 2. Remove the "active" highlight from all tab buttons
+        const allTabs = document.querySelectorAll(".tab");
+        allTabs.forEach(function (tab) {
+          tab.classList.remove("active");
+        });
+
+        // 3. Show the requested panel and highlight its tab
+        document.getElementById("panel-" + tabId).classList.add("active");
+        tabElement.classList.add("active");
+
+        // 4. Update our memory of which tab is open, and scroll to the top
+        currentTab = tabId;
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      // ==========================================
+      // 4. OVERLAYS (Study Notes & Quizzes)
+      // ==========================================
+
+      // These labels are used on the "Back to ___" buttons inside the overlays
+      const sectionLabels = {
+        budget: "Budgeting",
+        rates: "Rates & Percentages",
+        assets: "Appreciation & Depreciation",
+        interest: "Interest",
+      };
+
+      // This function hides both the Study Notes and Quiz overlays completely
+      function closeAllOverlays() {
+        // Hide the study and quiz containers
+        const overlayTypes = ["study", "quiz"];
+        overlayTypes.forEach(function (type) {
+          const overlayElement = document.getElementById("overlay-" + type);
+          overlayElement.classList.remove("active");
+
+          // Hide all internal sections (budget, rates, etc.) inside this overlay
+          const sections = ["budget", "rates", "assets", "interest"];
+          sections.forEach(function (section) {
+            document
+              .getElementById(type + "-" + section)
+              .classList.add("hidden");
+          });
+        });
+
+        // Make sure the main calculators are visible again
+        document.getElementById("panels-container").style.display = "";
+      }
+
+      // This function opens either the Study Notes or the Quiz for a specific topic
+      function openOverlay(type, section) {
+        closeAllOverlays(); // Reset everything
+
+        // Hide the main calculators so they don't overlap with the full-screen overlay
+        document.getElementById("panels-container").style.display = "none";
+
+        // 1. Show the main overlay container (e.g., the Study Notes window)
+        const overlayElement = document.getElementById("overlay-" + type);
+        overlayElement.classList.add("active");
+
+        // 2. Show the specific content inside it (e.g., the Budgeting notes)
+        document
+          .getElementById(type + "-" + section)
+          .classList.remove("hidden");
+
+        // 3. Update the text on the Back button (e.g., "Back to Budgeting")
+        document.getElementById(type + "-back-label").textContent =
+          sectionLabels[section];
+
+        // 4. Remember where we came from, so the "Back" button knows where to take us
+        overlayElement.dataset.returnTab = section;
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
+
+        // 5. Ask KaTeX to render any math formulas that just became visible!
+        // (We have to do this because KaTeX sometimes ignores hidden text)
+        if (window.renderMathInElement) {
+          renderMathInElement(overlayElement, {
+            delimiters: [
+              { left: "$$", right: "$$", display: true },
+              { left: "\\(", right: "\\)", display: false },
+            ],
+            throwOnError: false,
+          });
+        }
+      }
+
+      // This function runs when the user clicks the "Back to ___" button
+      function closeOverlay(type) {
+        const overlayElement = document.getElementById("overlay-" + type);
+
+        // Figure out which tab we were on before opening the overlay
+        const returnTab = overlayElement.dataset.returnTab || currentTab;
+
+        closeAllOverlays(); // Hide the overlay
+
+        // Bring the calculator panels back to the screen
+        document.getElementById("panels-container").style.display = "";
+
+        // Immediately switch back to the correct tab so the user doesn't get lost
+        const allPanels = document.querySelectorAll(".panel");
+        allPanels.forEach(function (p) {
+          p.classList.remove("active");
+        });
+
+        const allTabs = document.querySelectorAll(".tab");
+        allTabs.forEach(function (t) {
+          t.classList.remove("active");
+        });
+
+        document.getElementById("panel-" + returnTab).classList.add("active");
+        document.getElementById("tab-" + returnTab).classList.add("active");
+        currentTab = returnTab;
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      // ==========================================
+      // 5. QUIZ GRADING SYSTEM
+      // ==========================================
+
+      // Checks the user's quiz answers against the correct answers and shows the results
+      function submitQuiz(
+        event,
+        formId,
+        resultId,
+        correctAnswers,
+        explanations,
+      ) {
+        // Prevent the page from automatically refreshing when the form is submitted
+        event.preventDefault();
+
+        const questionKeys = Object.keys(correctAnswers); // Example: ['bq1', 'bq2', 'bq3']
+        let score = 0;
+        let resultsHTML = ""; // This will hold the HTML that we show the user at the end
+
+        // Loop through every question in the quiz
+        questionKeys.forEach(function (key, index) {
+          // Find which option the user clicked (if any)
+          const selectedRadio = document.querySelector(
+            `input[name="${key}"]:checked`,
+          );
+
+          // Check if what they clicked matches our answer key
+          const isCorrect =
+            selectedRadio && selectedRadio.value === correctAnswers[key];
+
+          if (isCorrect) {
+            score++; // Add a point!
+          }
+
+          // Choose the styling based on whether they got it right or wrong
+          const cssClass = isCorrect ? "correct" : "wrong";
+          const label = isCorrect ? "&#x2713; Correct" : "&#x2717; Incorrect";
+
+          // Build the result message for this specific question
+          let questionResult = `<div class="quiz-result-item ${cssClass}">`;
+          questionResult += `<strong>Q${index + 1}: ${label}</strong>`;
+
+          // Only show the detailed explanation if they got it wrong
+          if (!isCorrect) {
+            questionResult += ` — ` + explanations[key];
+          }
+          questionResult += `</div>`;
+
+          // Add this question's result to our master list of results
+          resultsHTML += questionResult;
+        });
+
+        // Finally, display the score and the explanations on the screen
+        const resultBox = document.getElementById(resultId);
+        resultBox.classList.remove("hidden");
+        resultBox.innerHTML = `
+    <div style="font-weight:800; font-size:1.1rem; margin-bottom:1rem;">
+      Score: ${score} / ${questionKeys.length}
+    </div>
+    ${resultsHTML}
+  `;
+      }
+
+      // ==========================================
+      // 6. CALCULATOR LOGIC: BUDGETING
+      // ==========================================
+
+      document
+        .getElementById("budgetForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault(); // Stop page refresh
+
+          // 1. Get the net income the user typed in
+          const netIncome = parseFloat(
+            document.getElementById("netIncome").value,
+          );
+
+          // If they typed letters or a negative number, stop here
+          if (!netIncome || netIncome <= 0) return;
+
+          // 2. Perform the math using the 50/30/20 rule
+          const monthlyIncome = netIncome / 12; // Convert annual to monthly
+          const needsBudget = monthlyIncome * 0.5; // 50% for Needs
+          const wantsBudget = monthlyIncome * 0.3; // 30% for Wants
+          const savingsBudget = monthlyIncome * 0.2; // 20% for Savings
+
+          // 3. Show the results on the screen
+          const resultBox = document.getElementById("budgetResult");
+          resultBox.classList.remove("hidden");
+          resultBox.innerHTML = `
+    <div class="result-label">Monthly Net Income</div>
+    <div class="result-value">${formatCurrency(monthlyIncome)}</div>
+    <div class="result-row"><span>Needs (50%)</span><strong>${formatCurrency(needsBudget)}</strong></div>
+    <div class="result-row"><span>Wants (30%)</span><strong>${formatCurrency(wantsBudget)}</strong></div>
+    <div class="result-row"><span>Savings (20%)</span><strong>${formatCurrency(savingsBudget)}</strong></div>
+    
+    <div class="math-section">
+      <div class="math-label">Step-by-Step Calculation</div>
+      <div class="math-steps">Net Annual Income  = ${formatCurrency(netIncome)}
+Monthly Net Income = ${formatCurrency(netIncome)} ÷ 12 = ${formatCurrency(monthlyIncome)}
+
+Needs   = ${formatCurrency(monthlyIncome)} × 50% = ${formatCurrency(needsBudget)}
+Wants   = ${formatCurrency(monthlyIncome)} × 30% = ${formatCurrency(wantsBudget)}
+Savings = ${formatCurrency(monthlyIncome)} × 20% = ${formatCurrency(savingsBudget)}</div>
+    </div>`;
+        });
+
+      // ==========================================
+      // 7. CALCULATOR LOGIC: PERCENTAGE CHANGE
+      // ==========================================
+
+      document
+        .getElementById("pctForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+
+          const originalValue = parseFloat(
+            document.getElementById("baseValue").value,
+          );
+          const newValue = parseFloat(
+            document.getElementById("newValue").value,
+          );
+
+          if (isNaN(originalValue) || isNaN(newValue) || originalValue === 0)
+            return;
+
+          // The Formula: ((New - Old) / Old) * 100
+          const unformattedDifference = newValue - originalValue;
+          const percentageChange =
+            (unformattedDifference / originalValue) * 100;
+
+          // Did it go up or down?
+          const isIncrease = percentageChange >= 0;
+          const sign = isIncrease ? "+" : "";
+          const labelText = isIncrease ? "Increase" : "Decrease";
+
+          // Display it!
+          const resultBox = document.getElementById("ratesResult");
+          resultBox.classList.remove("hidden");
+          resultBox.innerHTML = `
+    <div class="result-label">Percentage ${labelText}</div>
+    <div class="result-value">${sign}${formatNumber(percentageChange)}%</div>
+    
+    <div class="math-section">
+      <div class="math-label">Step-by-Step Calculation</div>
+      <div class="math-steps">Formula: % Change = (New − Old) ÷ Old × 100
+
+= (${formatNumber(newValue)} − ${formatNumber(originalValue)}) ÷ ${formatNumber(originalValue)} × 100
+= ${formatNumber(unformattedDifference)} ÷ ${formatNumber(originalValue)} × 100
+= ${sign}${formatNumber(percentageChange)}%</div>
+    </div>`;
+        });
+
+      // ==========================================
+      // 8. CALCULATOR LOGIC: UNIT RATE
+      // ==========================================
+
+      document
+        .getElementById("unitRateBtn")
+        .addEventListener("click", function () {
+          const totalCost = parseFloat(
+            document.getElementById("unitCost").value,
+          );
+          const totalQuantity = parseFloat(
+            document.getElementById("unitQty").value,
+          );
+
+          if (!totalCost || !totalQuantity || totalQuantity <= 0) return;
+
+          // The Formula: Total Cost / Quantity
+          const unitRate = totalCost / totalQuantity;
+
+          const resultBox = document.getElementById("ratesResult");
+          resultBox.classList.remove("hidden");
+          resultBox.innerHTML = `
+    <div class="result-label">Unit Rate</div>
+    <div class="result-value">${formatCurrency(unitRate)}<span style="font-size:1rem;font-weight:400;color:var(--text-muted)"> / unit</span></div>
+    
+    <div class="math-section">
+      <div class="math-label">Step-by-Step Calculation</div>
+      <div class="math-steps">Formula: Unit Rate = Total Cost ÷ Quantity
+
+= ${formatCurrency(totalCost)} ÷ ${formatNumber(totalQuantity)}
+= ${formatCurrency(unitRate)} per unit</div>
+    </div>`;
+        });
+
+      // ==========================================
+      // 9. CALCULATOR LOGIC: APPRECIATION & DEPRECIATION
+      // ==========================================
+
+      document
+        .getElementById("assetForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+
+          const presentValue = parseFloat(
+            document.getElementById("assetInitial").value,
+          ); // "PV"
+          const annualRatePercent = parseFloat(
+            document.getElementById("assetRate").value,
+          ); // "r" as a percent
+          const timeInYears = parseFloat(
+            document.getElementById("assetYears").value,
+          ); // "t"
+          const changeType = document.getElementById("assetType").value; // "appreciation" or "depreciation"
+
+          if (
+            isNaN(presentValue) ||
+            isNaN(annualRatePercent) ||
+            isNaN(timeInYears)
+          )
+            return;
+
+          // Convert 5% to 0.05
+          const decimalRate = annualRatePercent / 100;
+
+          // If it goes up, we multiply by (1 + r). If it goes down, we multiply by (1 - r).
+          const formulaFactor =
+            changeType === "appreciation" ? 1 + decimalRate : 1 - decimalRate;
+
+          // Future Value Formula: PV * (factor ^ t)
+          const futureValue =
+            presentValue * Math.pow(formulaFactor, timeInYears);
+
+          // How much money was gained or lost?
+          const difference = futureValue - presentValue;
+
+          // UI text formatting (so we can print a + or − sign clearly)
+          const signToPrint = changeType === "appreciation" ? "+" : "−";
+          const labelToPrint =
+            changeType === "appreciation" ? "Total Gain" : "Total Loss";
+
+          const resultBox = document.getElementById("assetResult");
+          resultBox.classList.remove("hidden");
+          resultBox.innerHTML = `
+    <div class="result-label">Future Value after ${timeInYears} year${timeInYears !== 1 ? "s" : ""}</div>
+    <div class="result-value">${formatCurrency(futureValue)}</div>
+    <div class="result-row"><span>Starting Value</span><strong>${formatCurrency(presentValue)}</strong></div>
+    <div class="result-row"><span>${labelToPrint}</span><strong>${signToPrint}${formatCurrency(Math.abs(difference))}</strong></div>
+    
+    <div class="math-section">
+      <div class="math-label">Step-by-Step Calculation</div>
+      <div class="math-steps">Formula: FV = PV × (1 ${signToPrint} r)^t
+
+PV = ${formatCurrency(presentValue)}
+r  = ${formatNumber(annualRatePercent)}% = ${decimalRate}
+t  = ${timeInYears} years
+
+FV = ${formatCurrency(presentValue)} × (${formatNumber(formulaFactor)})^${timeInYears}
+   = ${formatCurrency(presentValue)} × ${formatNumber(Math.pow(formulaFactor, timeInYears))}
+   = ${formatCurrency(futureValue)}</div>
+    </div>`;
+        });
+
+      // ==========================================
+      // 10. CALCULATOR LOGIC: INTEREST (Simple & Compound)
+      // ==========================================
+
+      document
+        .getElementById("interestForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+
+          const principalAmount = parseFloat(
+            document.getElementById("principal").value,
+          ); // "P"
+          const annualRatePercent = parseFloat(
+            document.getElementById("intRate").value,
+          ); // "r"
+          const timeInYears = parseFloat(
+            document.getElementById("intYears").value,
+          ); // "t"
+          const compoundingType = document.getElementById("compType").value; // "simple", "1", "12", "365"
+
+          if (
+            isNaN(principalAmount) ||
+            isNaN(annualRatePercent) ||
+            isNaN(timeInYears)
+          )
+            return;
+
+          // Convert 4.5% to 0.045
+          const decimalRate = annualRatePercent / 100;
+
+          let totalFutureAmount; // The final amount of money (A)
+          let totalInterestEarned; // Just the interest portion (I)
+          let stepByStepText = ""; // What we show in the math box
+
+          // --- SIMPLE INTEREST ---
+          if (compoundingType === "simple") {
+            // Formula: I = P * r * t
+            totalInterestEarned = principalAmount * decimalRate * timeInYears;
+            totalFutureAmount = principalAmount + totalInterestEarned;
+
+            stepByStepText = `Formula: I = P × r × t
+
+P = ${formatCurrency(principalAmount)}
+r = ${annualRatePercent}% = ${decimalRate}
+t = ${timeInYears} years
+
+I = ${formatCurrency(principalAmount)} × ${decimalRate} × ${timeInYears}
+  = ${formatCurrency(totalInterestEarned)}
+
+Total = P + I 
+      = ${formatCurrency(principalAmount)} + ${formatCurrency(totalInterestEarned)} 
+      = ${formatCurrency(totalFutureAmount)}`;
+          }
+
+          // --- COMPOUND INTEREST ---
+          else {
+            // Determine 'n' (how many times per year interest is applied)
+            // 1 = Annually, 12 = Monthly, 365 = Daily
+            const numCompoundingPeriods = parseInt(compoundingType);
+            let frequencyWord = "";
+            if (numCompoundingPeriods === 1) frequencyWord = "annually";
+            if (numCompoundingPeriods === 12) frequencyWord = "monthly";
+            if (numCompoundingPeriods === 365) frequencyWord = "daily";
+
+            // Formula: A = P(1 + r/n)^(nt)
+            const ratePerPeriod = decimalRate / numCompoundingPeriods; // (r/n)
+            const totalPeriods = numCompoundingPeriods * timeInYears; // (nt)
+
+            totalFutureAmount =
+              principalAmount * Math.pow(1 + ratePerPeriod, totalPeriods);
+            totalInterestEarned = totalFutureAmount - principalAmount;
+
+            stepByStepText = `Formula: A = P × (1 + r/n)^(n×t)   [compounded ${frequencyWord}]
+
+P = ${formatCurrency(principalAmount)}
+r = ${annualRatePercent}% = ${decimalRate}
+n = ${numCompoundingPeriods}  (times per year)
+t = ${timeInYears} years
+
+A = ${formatCurrency(principalAmount)} × (1 + ${decimalRate}/${numCompoundingPeriods})^(${numCompoundingPeriods}×${timeInYears})
+  = ${formatCurrency(principalAmount)} × (${formatNumber(1 + ratePerPeriod)})^${totalPeriods}
+  = ${formatCurrency(principalAmount)} × ${formatNumber(Math.pow(1 + ratePerPeriod, totalPeriods))}
+  = ${formatCurrency(totalFutureAmount)}
+
+Interest Earned = ${formatCurrency(totalFutureAmount)} − ${formatCurrency(principalAmount)} 
+                = ${formatCurrency(totalInterestEarned)}`;
+          }
+
+          // Show results on screen
+          const resultBox = document.getElementById("interestResult");
+          resultBox.classList.remove("hidden");
+          resultBox.innerHTML = `
+    <div class="result-label">Total Amount</div>
+    <div class="result-value">${formatCurrency(totalFutureAmount)}</div>
+    <div class="result-row"><span>Principal</span><strong>${formatCurrency(principalAmount)}</strong></div>
+    <div class="result-row"><span>Interest Earned</span><strong>${formatCurrency(totalInterestEarned)}</strong></div>
+    
+    <div class="math-section">
+      <div class="math-label">Step-by-Step Calculation</div>
+      <div class="math-steps">${stepByStepText}</div>
+    </div>`;
+        });
+    </script>
+  </body>
+</html>
